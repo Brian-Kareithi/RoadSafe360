@@ -108,7 +108,7 @@ export default function AuthorityDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#a1a1aa" />
                 <YAxis tick={{ fontSize: 12 }} stroke="#a1a1aa" />
-                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e4e4e7' }} formatter={(v: number) => formatCurrency(v)} />
+                <Tooltip contentStyle={{ borderRadius: '8px', border: '1px solid #e4e4e7' }} formatter={(v: any) => formatCurrency(Number(v))} />
                 <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>

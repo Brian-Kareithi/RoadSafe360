@@ -7,7 +7,6 @@ import { useCollection } from '@/hooks/useFirestore';
 import { formatCurrency, formatDateTime, getDemeritStatus } from '@/lib/format';
 import { FiShield, FiAlertTriangle, FiFileText, FiBell, FiDownload, FiClock, FiArrowRight } from 'react-icons/fi';
 import Link from 'next/link';
-import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip } from 'recharts';
 
 const COLORS = ['#22c55e', '#f59e0b', '#ef4444'];

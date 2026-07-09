@@ -3,7 +3,8 @@ import { db } from '@/firebase/config';
 import type { OffenceRecord, OffenceCategory } from '@/types';
 
 export async function createOffence(data: Omit<OffenceRecord, 'id'>) {
-  return addDocument('offences', { ...data, timestamp: Timestamp.now().toDate().toISOString() });
+  const docRef = await addDoc(collection(db, 'offences'), { ...data, timestamp: Timestamp.now().toDate().toISOString() });
+  return docRef;
 }
 
 export async function getOffencesByDriver(driverId: string) {

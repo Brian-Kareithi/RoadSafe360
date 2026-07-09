@@ -72,7 +72,7 @@ export default function AnalyticsPage() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
                 <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#a1a1aa" />
                 <YAxis tick={{ fontSize: 12 }} stroke="#a1a1aa" />
-                <Tooltip contentStyle={{ borderRadius: '8px' }} formatter={(v: number) => formatCurrency(v)} />
+                <Tooltip contentStyle={{ borderRadius: '8px' }} formatter={(v: any) => formatCurrency(Number(v))} />
                 <Bar dataKey="revenue" fill="#22c55e" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -100,7 +100,7 @@ export default function AnalyticsPage() {
               <BarChart data={riskDistribution} layout="vertical">
                 <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
                 <XAxis type="number" tick={{ fontSize: 12 }} stroke="#a1a1aa" />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#a1a1aa"} width={120} />
+                <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#a1a1aa" width={120} />
                 <Tooltip contentStyle={{ borderRadius: '8px' }} />
                 <Bar dataKey="value" fill="#ef4444" radius={[0, 4, 4, 0]} />
               </BarChart>
