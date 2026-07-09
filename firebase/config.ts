@@ -3,28 +3,38 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 import { getStorage } from 'firebase/storage';
 import { getFunctions } from 'firebase/functions';
+import type { FirebaseApp } from 'firebase/app';
+import type { Auth } from 'firebase/auth';
+import type { Firestore } from 'firebase/firestore';
+import type { FirebaseStorage } from 'firebase/storage';
+import type { Functions } from 'firebase/functions';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID,
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
-  measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
+  apiKey: 'AIzaSyACqMt6je_xYLwYkVisztg_-YIwnXbq6Ls',
+  authDomain: 'life350-bc2d4.firebaseapp.com',
+  projectId: 'life350-bc2d4',
+  storageBucket: 'life350-bc2d4.firebasestorage.app',
+  messagingSenderId: '928575287733',
+  appId: '1:928575287733:web:2d2492da360824e9aa69fc',
+  measurementId: 'G-8G1LH3TMY8',
 };
 
-function createFirebaseInstance() {
-  if (typeof window === 'undefined') return {};
-  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  const storage = getStorage(app);
-  const functions = getFunctions(app);
-  return { app, auth, db, storage, functions };
+let _app: FirebaseApp | undefined;
+let _auth: Auth | undefined;
+let _db: Firestore | undefined;
+let _storage: FirebaseStorage | undefined;
+let _functions: Functions | undefined;
+
+if (typeof window !== 'undefined') {
+  _app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  _auth = getAuth(_app);
+  _db = getFirestore(_app);
+  _storage = getStorage(_app);
+  _functions = getFunctions(_app);
 }
 
-const instance = createFirebaseInstance();
-const { app, auth, db, storage, functions } = instance as any;
-
-export { app, auth, db, storage, functions };
+export const app = _app!;
+export const auth = _auth!;
+export const db = _db!;
+export const storage = _storage!;
+export const functions = _functions!;
