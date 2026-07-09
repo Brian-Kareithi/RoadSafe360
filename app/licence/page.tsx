@@ -58,14 +58,14 @@ export default function DigitalLicencePage() {
 
         <CardContent className="p-6 space-y-4">
           <div className="grid grid-cols-2 gap-4 text-sm">
-            <div><span className="text-zinc-400">Licence No.</span><p className="font-semibold">{licence.licenceNumber || 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Class</span><p className="font-semibold">{licence.licenceClass || 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Issue Date</span><p className="font-semibold">{licence.issueDate ? formatDate(licence.issueDate) : 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Expiry Date</span><p className="font-semibold">{licence.expiryDate ? formatDate(licence.expiryDate) : 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Demerit Points</span><p className="font-semibold">{driver.pointsBalance}/20</p></div>
-            <div><span className="text-zinc-400">Blood Group</span><p className="font-semibold">{driver.bloodGroup || 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Emergency Contact</span><p className="font-semibold">{driver.emergencyContact || 'N/A'}</p></div>
-            <div><span className="text-zinc-400">Status</span><p><Badge variant={licence.status === 'active' ? 'success' : 'destructive'}>{licence.status}</Badge></p></div>
+            <div><span className="text-zinc-400">Licence No.</span><div className="font-semibold">{licence.licenceNumber || 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Class</span><div className="font-semibold">{licence.licenceClass || 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Issue Date</span><div className="font-semibold">{licence.issueDate ? formatDate(licence.issueDate) : 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Expiry Date</span><div className="font-semibold">{licence.expiryDate ? formatDate(licence.expiryDate) : 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Demerit Points</span><div className="font-semibold">{driver.pointsBalance}/20</div></div>
+            <div><span className="text-zinc-400">Blood Group</span><div className="font-semibold">{driver.bloodGroup || 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Emergency Contact</span><div className="font-semibold">{driver.emergencyContact || 'N/A'}</div></div>
+            <div><span className="text-zinc-400">Status</span><div><Badge variant={licence.status === 'active' ? 'success' : 'destructive'}>{licence.status}</Badge></div></div>
           </div>
 
           <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4 flex flex-col items-center gap-3">
