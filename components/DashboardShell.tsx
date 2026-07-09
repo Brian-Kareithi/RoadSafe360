@@ -1,15 +1,23 @@
 'use client';
 
+import { useState } from 'react';
 import { Sidebar } from '@/components/Sidebar';
-import { useAuth } from '@/contexts/AuthContext';
+import { TopBar } from '@/components/TopBar';
+import { FirstTimeTutorial } from '@/components/FirstTimeTutorial';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
-    <div className="flex min-h-screen">
-      <Sidebar />
-      <main className="ml-64 flex-1 p-6 pt-0 bg-zinc-50 dark:bg-zinc-950 min-h-screen">
-        {children}
-      </main>
+    <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
+      <FirstTimeTutorial />
+      <Sidebar open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
+      <div className="flex flex-1 flex-col lg:pl-64">
+        <TopBar onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} mobileMenuOpen={mobileMenuOpen} />
+        <main className="flex-1 px-4 pb-8 pt-20 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
