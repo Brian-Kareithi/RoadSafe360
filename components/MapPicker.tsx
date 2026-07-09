@@ -1,0 +1,114 @@
+'use client';
+
+import { useEffect, useRef, useState } from 'react';
+import { FiMapPin, FiCrosshair, FiZoomIn } from 'react-icons/fi';
+
+interface MapPickerProps {
+  value: string;
+  onChange: (value: string) => void;
+}
+
+export default function MapPicker({ value, onChange }: MapPickerProps) {
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
+  const markerRef = useRef<any>(null);
+  const [mapReady, setMapReady] = useState(false);
+  const [address, setAddress] = useState('');
+  const [locating, setLocating] = useState(false);
+
+  useEffect(() => {
+    let L: any;
+    let map: any;
+
+    async function init() {
+      if (!mapRef.current || mapInstanceRef.current) return;
+      const Lmod = await import('leaflet');
+      L = Lmod.default || Lmod;
+
+      await import('leaflet/dist/leaflet.css');
+
+      map = L.map(mapRef.current, { zoomControl: false }).setView([-1.2921, 36.8219], 13);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19,
+      }).addTo(map);
+      L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+      const defaultIcon = L.icon({
+        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+        iconSize: [25, 41],
+        iconAnchor: [12, 41],
+        popupAnchor: [1, -34],
+        shadowSize: [41, 41],
+      });
+
+      markerRef.current = L.marker([-1.2921, 36.8219], { icon: defaultIcon, draggable: true }).addTo(map);
+      updateValue(-1.2921, 36.8219);
+
+      markerRef.current.on('dragend', () => {
+        const pos = markerRef.current.getLatLng();
+        updateValue(pos.lat, pos.lng);
+      });
+
+      map.on('click', (e: any) => {
+        markerRef.current.setLatLng(e.latlng);
+        updateValue(e.latlng.lat, e.latlng.lng);
+      });
+
+      mapInstanceRef.current = map;
+      setMapReady(true);
+
+      return () => { map.remove(); mapInstanceRef.current = null; };
+    }
+
+    init();
+  }, []);
+
+  const updateValue = async (lat: number, lng: number) => {
+    onChange(`${lat.toFixed(5)}, ${lng.toFixed(5)}`);
+    try {
+      const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+      const data = await res.json();
+      setAddress(data.display_name?.split(',')?.slice(0, 3)?.join(', ') || 'Unknown location');
+    } catch { setAddress('Location captured'); }
+  };
+
+  const locateMe = () => {
+    if (!navigator.geolocation) return;
+    setLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const { latitude, longitude } = pos.coords;
+        if (mapInstanceRef.current) {
+          mapInstanceRef.current.setView([latitude, longitude], 15);
+          if (markerRef.current) markerRef.current.setLatLng([latitude, longitude]);
+        }
+        updateValue(latitude, longitude);
+        setLocating(false);
+      },
+      () => { setLocating(false); },
+      { enableHighAccuracy: true, timeout: 10000 }
+    );
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center gap-2">
+        <input
+          type="text" value={value} readOnly
+          className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+          placeholder="Click map or use 📍 to set location"
+        />
+        <button type="button" onClick={locateMe} disabled={locating}
+          className="inline-flex items-center justify-center rounded-md border border-zinc-200 bg-white p-2 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 disabled:opacity-50">
+          <FiCrosshair size={16} className={locating ? 'animate-spin' : ''} />
+        </button>
+      </div>
+      {address && <p className="text-xs text-zinc-500">{address}</p>}
+      <div ref={mapRef} className="h-52 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden" />
+      {!mapReady && <div className="h-52 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-shimmer" />}
+    </div>
+  );
+}

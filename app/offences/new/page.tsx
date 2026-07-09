@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, lazy, Suspense } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { useCollection } from '@/hooks/useFirestore';
-import { FiAlertTriangle, FiMapPin, FiCamera, FiUpload, FiSend, FiArrowLeft } from 'react-icons/fi';
+import { FiAlertTriangle, FiCamera, FiUpload, FiSend, FiArrowLeft } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+
+const MapPicker = lazy(() => import('@/components/MapPicker'));
 
 export default function NewOffencePage() {
   const { data: categories } = useCollection('offenceCategories');
@@ -40,14 +42,6 @@ export default function NewOffencePage() {
       setDriverId(''); setCategoryId(''); setGpsLocation(''); setNotes('');
     } catch (err: any) { toast.error(err.message); }
     finally { setSubmitting(false); }
-  };
-
-  const captureLocation = () => {
-    if (!navigator.geolocation) { toast.error('Geolocation not available'); return; }
-    navigator.geolocation.getCurrentPosition(
-      (pos) => { setGpsLocation(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`); toast.success('Location captured'); },
-      () => toast.error('Failed to get location. Ensure GPS is enabled.')
-    );
   };
 
   return (
@@ -106,13 +100,10 @@ export default function NewOffencePage() {
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">GPS Location</label>
-                <div className="flex gap-2">
-                  <Input value={gpsLocation} onChange={e => setGpsLocation(e.target.value)} placeholder="Click 📍 to capture location" className="flex-1 min-w-0" />
-                  <Button type="button" variant="outline" onClick={captureLocation} title="Capture current location">
-                    <FiMapPin size={16} />
-                  </Button>
-                </div>
+                <label className="text-sm font-medium">Location (click map or use crosshair)</label>
+                <Suspense fallback={<div className="h-52 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-shimmer" />}>
+                  <MapPicker value={gpsLocation} onChange={setGpsLocation} />
+                </Suspense>
               </div>
 
               <div className="space-y-2">
@@ -131,7 +122,7 @@ export default function NewOffencePage() {
                 </Button>
               </div>
 
-              <Button type="submit" className="w-full gap-2" disabled={submitting}>
+              <Button type="submit" variant="kenyan" className="w-full gap-2" disabled={submitting}>
                 <FiSend size={16} />
                 {submitting ? 'Issuing...' : 'Issue Offence'}
               </Button>

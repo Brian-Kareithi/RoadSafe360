@@ -24,8 +24,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const unsub = onAuthChange(async (u) => {
       setUser(u);
       if (u) {
-        const p = await getUserProfile(u.uid);
-        setProfile(p as AppUser | null);
+        try {
+          const p = await getUserProfile(u.uid);
+          setProfile(p as AppUser | null);
+        } catch { setProfile(null); }
       } else {
         setProfile(null);
       }
@@ -34,7 +36,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return unsub;
   }, []);
 
-  const logout = async () => { await authLogout(); setProfile(null); setUser(null); };
+  const logout = async () => {
+    await authLogout();
+    setProfile(null);
+    setUser(null);
+    window.location.href = '/auth';
+  };
 
   return <AuthContext.Provider value={{ user, profile, loading, role: profile?.role || null, logout }}>{children}</AuthContext.Provider>;
 }

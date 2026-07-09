@@ -1,52 +1,67 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { login } from '@/services/authService';
+import { useAuth } from '@/contexts/AuthContext';
+import { SkeletonLoader } from '@/components/SkeletonLoader';
 import { FiShield, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
-import Link from 'next/link';
 
 export default function AuthPage() {
   const [email, setEmail] = useState('admin@roadsafe360.go.ke');
   const [password, setPassword] = useState('Admin123!');
   const [showPw, setShowPw] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { user, profile, loading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (user && profile && !loading) {
+      const role = profile.role;
+      const path = role === 'admin' ? '/dashboard/admin'
+        : role === 'police' ? '/dashboard/police'
+        : role === 'driver' ? '/dashboard/driver'
+        : role === 'authority' ? '/dashboard/authority'
+        : '/dashboard/admin';
+      router.replace(path);
+    }
+  }, [user, profile, loading, router]);
+
+  if (submitting || (user && !loading)) {
+    return <SkeletonLoader />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
+    setSubmitting(true);
     try {
       await login(email, password);
       toast.success('Welcome to RoadSafe360');
-      router.push('/dashboard/admin');
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
-    } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   const quickLogin = async (creds: { email: string; password: string }) => {
-    setLoading(true);
+    setSubmitting(true);
     try {
       await login(creds.email, creds.password);
       toast.success('Logged in successfully');
     } catch (err: any) {
       toast.error(err.message);
-    } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-zinc-50 dark:bg-zinc-950 px-4">
       <div className="mb-8 flex items-center gap-3">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900">
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#BB2020] text-white shadow-sm">
           <FiShield size={24} />
         </div>
         <div>
@@ -79,8 +94,8 @@ export default function AuthPage() {
                 </button>
               </div>
             </div>
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? 'Signing in...' : 'Sign In'}
+            <Button type="submit" className="w-full" disabled={submitting}>
+              {submitting ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
 

@@ -59,7 +59,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       )}>
         <div className="flex items-center justify-between px-6 py-5 border-b border-zinc-200 dark:border-zinc-800">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-zinc-900 text-white dark:bg-zinc-50 dark:text-zinc-900">
+            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[#BB2020] text-white shadow-sm">
               <FiShield size={18} />
             </div>
             <div>
@@ -80,7 +80,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               <Link key={link.href} href={link.href} onClick={handleNav}
                 className={cn('flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors',
                   isActive
-                    ? 'bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50'
+                    ? 'bg-[#BB2020]/10 text-[#BB2020] dark:bg-[#BB2020]/20 dark:text-[#FF4444]'
                     : 'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-50'
                 )}>
                 <Icon size={18} />
