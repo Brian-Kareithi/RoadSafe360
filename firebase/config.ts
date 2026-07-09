@@ -14,10 +14,17 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
-const functions = getFunctions(app);
+function createFirebaseInstance() {
+  if (typeof window === 'undefined') return {};
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+  const functions = getFunctions(app);
+  return { app, auth, db, storage, functions };
+}
+
+const instance = createFirebaseInstance();
+const { app, auth, db, storage, functions } = instance as any;
 
 export { app, auth, db, storage, functions };
