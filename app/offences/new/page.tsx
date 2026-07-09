@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, lazy, Suspense } from 'react';
+import { useState, lazy, Suspense, useCallback, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select } from '@/components/ui/select';
 import { useCollection } from '@/hooks/useFirestore';
-import { FiAlertTriangle, FiCamera, FiUpload, FiSend, FiArrowLeft } from 'react-icons/fi';
+import { FiAlertTriangle, FiCamera, FiUpload, FiSend, FiArrowLeft, FiUser, FiCheck } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 
@@ -19,12 +19,44 @@ export default function NewOffencePage() {
   const [gpsLocation, setGpsLocation] = useState('');
   const [notes, setNotes] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  const [driverInfo, setDriverInfo] = useState<{ fullName: string; nationalID: string; pointsBalance: number; status: string } | null>(null);
+  const [loadingDriver, setLoadingDriver] = useState(false);
+  const [driverNotFound, setDriverNotFound] = useState(false);
+  const lookupRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const selectedCat = categories.find((c: any) => c.id === categoryId) as any;
+
+  const lookupDriver = useCallback(async (id: string) => {
+    if (!id || id.length < 3) { setDriverInfo(null); setDriverNotFound(false); return; }
+    setLoadingDriver(true);
+    setDriverNotFound(false);
+    setDriverInfo(null);
+    try {
+      const { getDocument } = await import('@/hooks/useFirestore');
+      const doc = await getDocument<any>('drivers', id);
+      if (doc) {
+        setDriverInfo({ fullName: doc.fullName, nationalID: doc.nationalID, pointsBalance: doc.pointsBalance, status: doc.status });
+      } else {
+        setDriverNotFound(true);
+      }
+    } catch {
+      setDriverNotFound(true);
+    } finally {
+      setLoadingDriver(false);
+    }
+  }, []);
+
+  const handleDriverChange = (value: string) => {
+    setDriverId(value);
+    if (lookupRef.current) clearTimeout(lookupRef.current);
+    if (value.length < 3) { setDriverInfo(null); setDriverNotFound(false); return; }
+    lookupRef.current = setTimeout(() => lookupDriver(value), 500);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!driverId || !categoryId) { toast.error('Please fill all required fields'); return; }
+    if (!driverInfo) { toast.error('Please wait for driver verification'); return; }
     setSubmitting(true);
     try {
       const { addDocument } = await import('@/hooks/useFirestore');
@@ -38,8 +70,9 @@ export default function NewOffencePage() {
         status: 'issued',
         timestamp: new Date().toISOString(),
       });
-      toast.success('Offence issued successfully');
+      toast.success(`Offence issued to ${driverInfo.fullName}`);
       setDriverId(''); setCategoryId(''); setGpsLocation(''); setNotes('');
+      setDriverInfo(null); setDriverNotFound(false);
     } catch (err: any) { toast.error(err.message); }
     finally { setSubmitting(false); }
   };
@@ -67,7 +100,37 @@ export default function NewOffencePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Driver ID *</label>
-                  <Input value={driverId} onChange={e => setDriverId(e.target.value)} placeholder="e.g. driver document ID" required />
+                  <Input
+                    value={driverId}
+                    onChange={e => handleDriverChange(e.target.value)}
+                    placeholder="Enter driver document ID"
+                    className={driverInfo ? 'border-green-500 focus-visible:ring-green-500' : driverNotFound ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                    required
+                  />
+                  {loadingDriver && (
+                    <div className="flex items-center gap-2 text-xs text-zinc-400">
+                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
+                      Verifying driver...
+                    </div>
+                  )}
+                  {driverInfo && (
+                    <div className="flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 p-2.5 text-xs dark:border-green-800 dark:bg-green-950/30">
+                      <FiCheck className="mt-0.5 shrink-0 text-green-600" size={14} />
+                      <div className="text-green-800 dark:text-green-300">
+                        <span className="font-semibold">{driverInfo.fullName}</span>
+                        <span className="text-green-600 dark:text-green-400"> &middot; {driverInfo.nationalID}</span>
+                        <div className="mt-0.5 text-green-600 dark:text-green-400">
+                          {driverInfo.pointsBalance}/20 pts &middot; {driverInfo.status}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                  {driverNotFound && (
+                    <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+                      <FiAlertTriangle size={12} />
+                      Driver not found. Check the ID and try again.
+                    </div>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Offence Category *</label>
@@ -122,9 +185,9 @@ export default function NewOffencePage() {
                 </Button>
               </div>
 
-              <Button type="submit" variant="kenyan" className="w-full gap-2" disabled={submitting}>
+              <Button type="submit" variant="kenyan" className="w-full gap-2" disabled={submitting || !driverInfo}>
                 <FiSend size={16} />
-                {submitting ? 'Issuing...' : 'Issue Offence'}
+                {submitting ? 'Issuing...' : driverInfo ? `Issue Offence to ${driverInfo.fullName.split(' ')[0]}` : 'Verify driver first'}
               </Button>
             </form>
           </CardContent>
