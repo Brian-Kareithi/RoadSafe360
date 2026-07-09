@@ -1,5 +1,6 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from 'firebase/firestore';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyACqMt6je_xYLwYkVisztg_-YIwnXbq6Ls',
@@ -12,6 +13,28 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+const quickLoginUsers = [
+  { email: 'admin@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', displayName: 'Admin User' },
+  { email: 'officer@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Insp. John Kimani' },
+  { email: 'driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Brian Kareithi' },
+  { email: 'authority@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', displayName: 'Authority User' },
+];
+
+async function createOrUpdateAuthUser(email: string, password: string) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    return cred.user.uid;
+  } catch (err: any) {
+    if (err.code === 'auth/email-already-in-use') {
+      console.log(`  ~ ${email} already exists, signing in to update profile`);
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      return cred.user.uid;
+    }
+    throw err;
+  }
+}
 
 const kenyanDrivers = [
   { nationalID: '12345678', fullName: 'Brian Kareithi', phoneNumber: '+254712345678', email: 'brian.k@example.com', bloodGroup: 'O+', emergencyContact: '+254712345679', pointsBalance: 18, status: 'active', riskScore: 0.15 },
@@ -43,11 +66,6 @@ const offenceCategories = [
   { code: 'HLM-01', name: 'Illegal Modification', description: 'Operating vehicle with illegal modifications', fineAmount: 10000, demeritPoints: 2, severity: 'minor', courtRequired: false },
 ];
 
-const suspensionHistory = [
-  { startDate: '2026-01-15', endDate: '2026-04-15', reason: 'Repeat speeding offences', durationMonths: 3, driverId: '' },
-  { startDate: '2025-08-01', endDate: '2026-02-01', reason: 'DUI conviction', durationMonths: 6, driverId: '' },
-];
-
 const settings = [
   { key: 'demerit_safe_threshold', value: '15', description: 'Minimum points for Safe status' },
   { key: 'demerit_warning_threshold', value: '10', description: 'Minimum points for Warning status' },
@@ -64,9 +82,29 @@ const settings = [
 async function seed() {
   console.log('🌱 Seeding RoadSafe360 with Kenyan data...\n');
 
-  // Drivers & Licences
+  // ── PART 1: Firebase Auth Users (Quick Login) ──
+  console.log('─── Auth Users ───');
+  const driverUidMap: Record<string, string> = {};
+  for (const u of quickLoginUsers) {
+    try {
+      const uid = await createOrUpdateAuthUser(u.email, u.password);
+      await setDoc(doc(db, 'users', uid), {
+        uid, email: u.email, role: u.role, displayName: u.displayName,
+      });
+      driverUidMap[u.role] = uid;
+      console.log(`  ✓ ${u.displayName} (${u.email}) — role: ${u.role}`);
+    } catch (err: any) {
+      console.log(`  ✗ Failed to create ${u.email}: ${err.message}`);
+    }
+  }
+
+  // ── PART 2: Drivers & Licences ──
+  console.log('\n─── Drivers ───');
+  const driverIdMap: Record<string, string> = {};
   for (const d of kenyanDrivers) {
     const driverRef = await addDoc(collection(db, 'drivers'), { ...d, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
+    driverIdMap[d.fullName] = driverRef.id;
+
     const licenceClass = licenceClasses[Math.floor(Math.random() * licenceClasses.length)];
     const licenceNumber = `K${String(Math.floor(100000 + Math.random() * 900000))}`;
     await addDoc(collection(db, 'licences'), {
@@ -80,36 +118,44 @@ async function seed() {
       endorsements: [],
       createdAt: new Date().toISOString(),
     });
-    console.log(`  ✓ Driver: ${d.fullName} (${d.nationalID}) - ${d.pointsBalance}/20 pts`);
+    console.log(`  ✓ ${d.fullName} (${d.nationalID}) — ${d.pointsBalance}/20 pts`);
   }
 
-  // Offence Categories
+  // Link the "driver" quick-login user to Brian Kareithi
+  if (driverUidMap['driver'] && driverIdMap['Brian Kareithi']) {
+    await setDoc(doc(db, 'users', driverUidMap['driver']), {
+      uid: driverUidMap['driver'],
+      email: 'driver@roadsafe360.go.ke',
+      role: 'driver',
+      displayName: 'Brian Kareithi',
+      profileId: driverIdMap['Brian Kareithi'],
+    }, { merge: true });
+  }
+
+  // ── PART 3: Offence Categories ──
+  console.log('\n─── Offence Categories ───');
   for (const oc of offenceCategories) {
-    const ref = await addDoc(collection(db, 'offenceCategories'), oc);
-    console.log(`  ✓ Offence: ${oc.code} - ${oc.name} (${oc.demeritPoints}pts)`);
+    await addDoc(collection(db, 'offenceCategories'), oc);
+    console.log(`  ✓ ${oc.code} — ${oc.name} (${oc.demeritPoints} pts)`);
   }
 
-  // Offences (create some sample offences)
+  // ── PART 4: Sample Offences ──
+  console.log('\n─── Sample Offences ───');
   const driversSnap = await getDocs(collection(db, 'drivers'));
   const driverIds = driversSnap.docs.map(d => d.id);
   const categoriesSnap = await getDocs(collection(db, 'offenceCategories'));
   const catIds = categoriesSnap.docs.map(d => ({ id: d.id, data: d.data() }));
 
   const locations = [
-    '-1.2921,36.8219',  // Nairobi
-    '-4.0435,39.6682',  // Mombasa
-    '-0.1022,34.7617',  // Kisumu
-    '-0.3031,36.0800',  // Nakuru
-    '0.5143,35.2698',   // Eldoret
-    '-1.0384,37.0834',  // Thika
+    '-1.2921,36.8219',  '-4.0435,39.6682',  '-0.1022,34.7617',
+    '-0.3031,36.0800',  '0.5143,35.2698',   '-1.0384,37.0834',
   ];
 
   for (let i = 0; i < 20; i++) {
     const driverId = driverIds[Math.floor(Math.random() * driverIds.length)];
     const cat = catIds[Math.floor(Math.random() * catIds.length)];
-    const monthsAgo = Math.floor(Math.random() * 6);
     const date = new Date();
-    date.setMonth(date.getMonth() - monthsAgo);
+    date.setMonth(date.getMonth() - Math.floor(Math.random() * 6));
     await addDoc(collection(db, 'offences'), {
       driverId,
       offenceCategoryId: cat.id,
@@ -122,9 +168,10 @@ async function seed() {
       createdAt: date.toISOString(),
     });
   }
-  console.log('\n  ✓ 20 sample offences created');
+  console.log('  ✓ 20 sample offences created');
 
-  // Appeals
+  // ── PART 5: Appeals ──
+  console.log('\n─── Appeals ───');
   for (let i = 0; i < 5; i++) {
     const driverId = driverIds[Math.floor(Math.random() * driverIds.length)];
     await addDoc(collection(db, 'appeals'), {
@@ -138,7 +185,8 @@ async function seed() {
   }
   console.log('  ✓ 5 sample appeals created');
 
-  // Notifications
+  // ── PART 6: Notifications ──
+  console.log('\n─── Notifications ───');
   for (let i = 0; i < 10; i++) {
     await addDoc(collection(db, 'notifications'), {
       recipientID: driverIds[Math.floor(Math.random() * driverIds.length)],
@@ -151,24 +199,32 @@ async function seed() {
   }
   console.log('  ✓ 10 sample notifications created');
 
-  // Settings
+  // ── PART 7: Settings ──
+  console.log('\n─── System Settings ───');
   for (const s of settings) {
     await addDoc(collection(db, 'settings'), s);
   }
   console.log('  ✓ System settings configured');
 
-  // Police Officers
+  // ── PART 8: Police Officers ──
+  console.log('\n─── Police Officers ───');
   const officers = [
     { badgeNumber: 'POL-001', name: 'Insp. John Kimani', email: 'officer@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Central Police Station' },
     { badgeNumber: 'POL-002', name: 'Sgt. Alice Wanjiku', email: 'alice.wanjiku@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Mombasa Traffic Base' },
     { badgeNumber: 'POL-003', name: 'Cpl. David Omondi', email: 'david.omondi@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Police Station' },
   ];
   for (const o of officers) {
-    await addDoc(collection(db, 'policeOfficers'), { ...o, createdAt: new Date().toISOString() });
+    const officerRef = await addDoc(collection(db, 'policeOfficers'), { ...o, createdAt: new Date().toISOString() });
+    if (o.email === 'officer@roadsafe360.go.ke' && driverUidMap['police']) {
+      await setDoc(doc(db, 'users', driverUidMap['police']), {
+        profileId: officerRef.id,
+      }, { merge: true });
+    }
+    console.log(`  ✓ ${o.name} (${o.badgeNumber})`);
   }
-  console.log('  ✓ 3 police officers registered');
 
-  // Regions
+  // ── PART 9: Regions ──
+  console.log('\n─── Regions ───');
   const regions = [
     { name: 'Nairobi', code: 'NRB', officerCount: 45, driverCount: 125000, offenceCount: 12340, stations: 12 },
     { name: 'Mombasa', code: 'MSA', officerCount: 28, driverCount: 68000, offenceCount: 7890, stations: 8 },
@@ -182,7 +238,18 @@ async function seed() {
   }
   console.log('  ✓ 6 regions registered');
 
+  // ── PART 10: Link authority user ──
+  if (driverUidMap['authority']) {
+    await setDoc(doc(db, 'users', driverUidMap['authority']), {
+      profileId: 'authority-profile',
+    }, { merge: true });
+  }
+
+  // Sign out so the session doesn't persist
+  await auth.signOut();
+
   console.log('\n✅ Seeding complete!');
+  console.log('   Quick logins are now fully functional.\n');
   process.exit(0);
 }
 
