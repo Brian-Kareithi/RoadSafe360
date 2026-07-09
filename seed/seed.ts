@@ -64,6 +64,8 @@ const offenceCategories = [
   { code: 'OVL-01', name: 'Overloading', description: 'Vehicle carrying excess passengers or load', fineAmount: 15000, demeritPoints: 3, severity: 'moderate', courtRequired: false },
   { code: 'PRK-01', name: 'Illegal Parking', description: 'Parking in prohibited zone', fineAmount: 1500, demeritPoints: 1, severity: 'minor', courtRequired: false },
   { code: 'HLM-01', name: 'Illegal Modification', description: 'Operating vehicle with illegal modifications', fineAmount: 10000, demeritPoints: 2, severity: 'minor', courtRequired: false },
+  { code: 'EXC-01', name: 'Excess Passengers (Matatu/Nganya)', description: 'Carrying excess passengers in a matatu or nganya — 3 points per excess passenger', fineAmount: 5000, demeritPoints: 3, severity: 'moderate', courtRequired: false },
+  { code: 'HNG-01', name: 'Hanging Outside (Matatu/Nganya)', description: 'Passengers hanging outside a moving matatu or nganya', fineAmount: 3000, demeritPoints: 3, severity: 'moderate', courtRequired: false },
 ];
 
 const settings = [
