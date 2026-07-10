@@ -10,13 +10,13 @@ import type { FirebaseStorage } from 'firebase/storage';
 import type { Functions } from 'firebase/functions';
 
 const firebaseConfig = {
-  apiKey: 'AIzaSyACqMt6je_xYLwYkVisztg_-YIwnXbq6Ls',
-  authDomain: 'life350-bc2d4.firebaseapp.com',
-  projectId: 'life350-bc2d4',
-  storageBucket: 'life350-bc2d4.firebasestorage.app',
-  messagingSenderId: '928575287733',
-  appId: '1:928575287733:web:2d2492da360824e9aa69fc',
-  measurementId: 'G-8G1LH3TMY8',
+  apiKey: 'AIzaSyBHkqVST88k1Ojdx_96QWbnjky3-xnwBF8',
+  authDomain: 'roadsafe360-95d87.firebaseapp.com',
+  projectId: 'roadsafe360-95d87',
+  storageBucket: 'roadsafe360-95d87.firebasestorage.app',
+  messagingSenderId: '64803316056',
+  appId: '1:64803316056:web:5814a4f41f6b467123452d',
+  measurementId: 'G-41EBGVFB9N',
 };
 
 let _app: FirebaseApp | undefined;

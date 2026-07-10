@@ -111,6 +111,24 @@ export interface SystemSetting {
   description?: string;
 }
 
+export interface Vehicle {
+  id?: string;
+  registrationNumber: string;
+  make: string;
+  model: string;
+  year: number;
+  colour: string;
+  vehicleClass: string;
+  chassisNumber: string;
+  engineNumber: string;
+  driverId: string;
+  status: 'active' | 'suspended' | 'stolen' | 'decommissioned';
+  insuranceExpiry?: string;
+  roadTaxExpiry?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Payment {
   id?: string;
   driverId: string;
@@ -118,6 +136,14 @@ export interface Payment {
   amount: number;
   status: 'pending' | 'paid' | 'failed';
   paidAt?: string;
+}
+
+export interface QRCodeData {
+  type: 'licence' | 'vehicle';
+  reference: string;
+  ownerId: string;
+  status: string;
+  issuedAt: string;
 }
 
 export type UserRole = 'admin' | 'police' | 'driver' | 'authority';

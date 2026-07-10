@@ -12,7 +12,7 @@ import { FiShield, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 export default function AuthPage() {
-  const [email, setEmail] = useState('admin@roadsafe360.go.ke');
+  const [email, setEmail] = useState('zaahid@roadsafe360.go.ke');
   const [password, setPassword] = useState('Admin123!');
   const [showPw, setShowPw] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -100,18 +100,18 @@ export default function AuthPage() {
           </form>
 
           <div className="mt-6">
-            <p className="text-xs text-zinc-400 mb-3 text-center">Quick Login (Demo)</p>
+            <p className="text-xs text-zinc-400 mb-3 text-center">Quick Login</p>
             <div className="grid grid-cols-2 gap-2">
               {[
-                { label: 'Admin', email: 'admin@roadsafe360.go.ke', password: 'Admin123!', role: 'admin' },
-                { label: 'Police', email: 'officer@roadsafe360.go.ke', password: 'Officer123!', role: 'police' },
-                { label: 'Driver', email: 'driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver' },
-                { label: 'Authority', email: 'authority@roadsafe360.go.ke', password: 'Auth123!', role: 'authority' },
+                { label: 'Admin', email: 'zaahid@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', name: 'Zaahid Abdulmalik' },
+                { label: 'Driver', email: 'zaahid.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', name: 'Zaahid (Driver)' },
+                { label: 'Authority', email: 'khalid@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', name: 'Khalid Salad' },
+                { label: 'Police', email: 'aisha@roadsafe360.go.ke', password: 'Officer123!', role: 'police', name: 'Aisha Abubakar' },
               ].map((item) => (
-                <button key={item.role} onClick={() => quickLogin(item)}
+                <button key={item.email} onClick={() => quickLogin(item)}
                   className="px-3 py-2 text-xs font-medium rounded-lg border border-zinc-200 dark:border-zinc-700 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors text-left">
-                  <span className="block font-semibold">{item.label}</span>
-                  <span className="block text-zinc-400 truncate">{item.email}</span>
+                  <span className="block font-semibold">{item.name}</span>
+                  <span className="block text-zinc-400 truncate">{item.role}</span>
                 </button>
               ))}
             </div>

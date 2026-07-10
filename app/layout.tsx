@@ -6,6 +6,8 @@ export const metadata: Metadata = {
   title: 'RoadSafe360 - Intelligent Driver Demerit & Road Safety Management System',
   description: 'Enterprise-grade road safety management platform for traffic authorities, police officers, and drivers.',
   icons: { icon: '/icon.jpg', apple: '/icon.jpg' },
+  appleWebApp: { capable: true, title: 'RoadSafe360', statusBarStyle: 'default' },
+  other: { 'mobile-web-app-capable': 'yes' },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

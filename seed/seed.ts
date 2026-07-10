@@ -1,55 +1,52 @@
 import { initializeApp } from 'firebase/app';
-import { getFirestore, collection, addDoc, getDocs, setDoc, doc } from 'firebase/firestore';
+import { getFirestore, collection, addDoc, setDoc, doc } from 'firebase/firestore';
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyACqMt6je_xYLwYkVisztg_-YIwnXbq6Ls',
-  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'life350-bc2d4.firebaseapp.com',
-  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'life350-bc2d4',
-  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'life350-bc2d4.firebasestorage.app',
-  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '928575287733',
-  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:928575287733:web:2d2492da360824e9aa69fc',
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'AIzaSyBHkqVST88k1Ojdx_96QWbnjky3-xnwBF8',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'roadsafe360-95d87.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'roadsafe360-95d87',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'roadsafe360-95d87.firebasestorage.app',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '64803316056',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:64803316056:web:5814a4f41f6b467123452d',
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const quickLoginUsers = [
-  { email: 'admin@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', displayName: 'Admin User' },
-  { email: 'officer@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Insp. John Kimani' },
-  { email: 'driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Brian Kareithi' },
-  { email: 'authority@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', displayName: 'Authority User' },
+const staff = [
+  { email: 'zaahid@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', displayName: 'Zaahid Abdulmalik' },
+  { email: 'zaahid.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Zaahid Abdulmalik' },
+  { email: 'khalid@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', displayName: 'Khalid Salad' },
+  { email: 'aisha@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Aisha Abubakar' },
+  { email: 'naila@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Naila Amour' },
+  { email: 'rania@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Rania Bahlewa' },
+  { email: 'zeitun@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Zeitun Hussein' },
+  { email: 'reyhan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Reyhan Fuad' },
+  { email: 'turq@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Turq Mahamud' },
+  { email: 'fenz@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Fenz Abdisalam' },
+  { email: 'umulkheir@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'UmulKheir Aden' },
+  { email: 'mohammed@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Mohammed Karshe' },
+  { email: 'faizaan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Faizaan Mohammed' },
+  { email: 'adnan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Adnan Ali' },
+  { email: 'abdulhameed@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Abdulhameed Saleh' },
 ];
 
-async function createOrUpdateAuthUser(email: string, password: string) {
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    return cred.user.uid;
-  } catch (err: any) {
-    if (err.code === 'auth/email-already-in-use') {
-      console.log(`  ~ ${email} already exists, signing in to update profile`);
-      const cred = await signInWithEmailAndPassword(auth, email, password);
-      return cred.user.uid;
-    }
-    throw err;
-  }
-}
-
-const kenyanDrivers = [
-  { nationalID: '12345678', fullName: 'Brian Kareithi', phoneNumber: '+254712345678', email: 'brian.k@example.com', bloodGroup: 'O+', emergencyContact: '+254712345679', pointsBalance: 18, status: 'active', riskScore: 0.15 },
-  { nationalID: '23456789', fullName: 'Grace Wanjiku', phoneNumber: '+254723456789', email: 'grace.w@example.com', bloodGroup: 'A+', emergencyContact: '+254723456780', pointsBalance: 12, status: 'active', riskScore: 0.35 },
-  { nationalID: '34567890', fullName: 'Peter Kamau', phoneNumber: '+254734567890', email: 'peter.k@example.com', bloodGroup: 'B+', emergencyContact: '+254734567891', pointsBalance: 6, status: 'warning', riskScore: 0.65 },
-  { nationalID: '45678901', fullName: 'Mary Akinyi', phoneNumber: '+254745678901', email: 'mary.a@example.com', bloodGroup: 'AB+', emergencyContact: '+254745678902', pointsBalance: 20, status: 'active', riskScore: 0.05 },
-  { nationalID: '56789012', fullName: 'James Ochieng', phoneNumber: '+254756789012', email: 'james.o@example.com', bloodGroup: 'O-', emergencyContact: '+254756789013', pointsBalance: 3, status: 'suspension_review', riskScore: 0.82 },
-  { nationalID: '67890123', fullName: 'Faith Nyambura', phoneNumber: '+254767890123', email: 'faith.n@example.com', bloodGroup: 'A-', emergencyContact: '+254767890124', pointsBalance: 0, status: 'suspended', riskScore: 0.95 },
-  { nationalID: '78901234', fullName: 'Samuel Mutua', phoneNumber: '+254778901234', email: 'samuel.m@example.com', bloodGroup: 'B-', emergencyContact: '+254778901235', pointsBalance: 15, status: 'active', riskScore: 0.22 },
-  { nationalID: '89012345', fullName: 'Diana Chebet', phoneNumber: '+254789012345', email: 'diana.c@example.com', bloodGroup: 'O+', emergencyContact: '+254789012346', pointsBalance: 9, status: 'warning', riskScore: 0.55 },
-  { nationalID: '90123456', fullName: 'David Mwangi', phoneNumber: '+254790123456', email: 'david.m@example.com', bloodGroup: 'AB-', emergencyContact: '+254790123457', pointsBalance: 1, status: 'suspension_review', riskScore: 0.78 },
-  { nationalID: '01234567', fullName: 'Sarah Wambui', phoneNumber: '+254701234567', email: 'sarah.w@example.com', bloodGroup: 'A+', emergencyContact: '+254701234568', pointsBalance: 16, status: 'active', riskScore: 0.18 },
+const policeOfficers = [
+  { badgeNumber: 'POL-001', name: 'Aisha Abubakar', email: 'aisha@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Central Police Station' },
+  { badgeNumber: 'POL-002', name: 'Naila Amour', email: 'naila@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Mombasa Traffic Base' },
+  { badgeNumber: 'POL-003', name: 'Rania Bahlewa', email: 'rania@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Police Station' },
+  { badgeNumber: 'POL-004', name: 'Zeitun Hussein', email: 'zeitun@roadsafe360.go.ke', region: 'Nakuru', assignedStation: 'Nakuru Traffic Office' },
+  { badgeNumber: 'POL-005', name: 'Reyhan Fuad', email: 'reyhan@roadsafe360.go.ke', region: 'Eldoret', assignedStation: 'Eldoret Police Base' },
+  { badgeNumber: 'POL-006', name: 'Turq Mahamud', email: 'turq@roadsafe360.go.ke', region: 'Thika', assignedStation: 'Thika Traffic Unit' },
+  { badgeNumber: 'POL-007', name: 'Fenz Abdisalam', email: 'fenz@roadsafe360.go.ke', region: 'Machakos', assignedStation: 'Machakos Police Station' },
+  { badgeNumber: 'POL-008', name: 'UmulKheir Aden', email: 'umulkheir@roadsafe360.go.ke', region: 'Nyeri', assignedStation: 'Nyeri Traffic Base' },
+  { badgeNumber: 'POL-009', name: 'Mohammed Karshe', email: 'mohammed@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Kilimani Police Station' },
+  { badgeNumber: 'POL-010', name: 'Faizaan Mohammed', email: 'faizaan@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Nyali Traffic Office' },
+  { badgeNumber: 'POL-011', name: 'Adnan Ali', email: 'adnan@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Traffic Base' },
+  { badgeNumber: 'POL-012', name: 'Abdulhameed Saleh', email: 'abdulhameed@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'CBD Traffic Office' },
 ];
-
-const licenceClasses = ['A', 'B', 'C', 'D', 'E', 'G'];
 
 const offenceCategories = [
   { code: 'SPD-01', name: 'Speeding (Excess)', description: 'Exceeding posted speed limit by more than 20 km/h', fineAmount: 10000, demeritPoints: 6, severity: 'serious', courtRequired: false },
@@ -81,177 +78,119 @@ const settings = [
   { key: 'licence_renewal_reminder_days', value: '30', description: 'Days before expiry to send reminder' },
 ];
 
-async function seed() {
-  console.log('🌱 Seeding RoadSafe360 with Kenyan data...\n');
+const regions = [
+  { name: 'Nairobi', code: 'NRB', officerCount: 45, driverCount: 125000, offenceCount: 12340, stations: 12 },
+  { name: 'Mombasa', code: 'MSA', officerCount: 28, driverCount: 68000, offenceCount: 7890, stations: 8 },
+  { name: 'Kisumu', code: 'KSM', officerCount: 15, driverCount: 42000, offenceCount: 4560, stations: 5 },
+  { name: 'Nakuru', code: 'NKR', officerCount: 12, driverCount: 38000, offenceCount: 3890, stations: 4 },
+  { name: 'Eldoret', code: 'ELD', officerCount: 10, driverCount: 31000, offenceCount: 2980, stations: 4 },
+  { name: 'Thika', code: 'THK', officerCount: 8, driverCount: 28000, offenceCount: 2340, stations: 3 },
+  { name: 'Machakos', code: 'MKS', officerCount: 7, driverCount: 22000, offenceCount: 1870, stations: 3 },
+  { name: 'Nyeri', code: 'NYR', officerCount: 6, driverCount: 18000, offenceCount: 1560, stations: 2 },
+];
 
-  // ── PART 1: Firebase Auth Users (Quick Login) ──
-  console.log('─── Auth Users ───');
-  const driverUidMap: Record<string, string> = {};
-  for (const u of quickLoginUsers) {
+async function createOrUpdateAuthUser(email: string, password: string) {
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    return cred.user.uid;
+  } catch (err: any) {
+    if (err.code === 'auth/email-already-in-use') {
+      console.log('  ~ ' + email + ' already exists, signing in to update profile');
+      const cred = await signInWithEmailAndPassword(auth, email, password);
+      return cred.user.uid;
+    }
+    throw err;
+  }
+}
+
+async function seed() {
+  console.log('Seeding RoadSafe360 with staff accounts and system data...\n');
+
+  console.log('--- Auth Users (Staff) ---');
+  const uidMap: Record<string, string> = {};
+  for (const s of staff) {
     try {
-      const uid = await createOrUpdateAuthUser(u.email, u.password);
+      const uid = await createOrUpdateAuthUser(s.email, s.password);
       await setDoc(doc(db, 'users', uid), {
-        uid, email: u.email, role: u.role, displayName: u.displayName,
+        uid, email: s.email, role: s.role, displayName: s.displayName,
       });
-      driverUidMap[u.role] = uid;
-      console.log(`  ✓ ${u.displayName} (${u.email}) — role: ${u.role}`);
+      uidMap[s.email] = uid;
+      console.log('  ' + s.displayName + ' (' + s.email + ') - ' + s.role);
     } catch (err: any) {
-      console.log(`  ✗ Failed to create ${u.email}: ${err.message}`);
+      console.log('  Failed to create ' + s.email + ': ' + err.message);
     }
   }
 
-  // ── PART 2: Drivers & Licences ──
-  console.log('\n─── Drivers ───');
-  const driverIdMap: Record<string, string> = {};
-  for (const d of kenyanDrivers) {
-    const driverRef = await addDoc(collection(db, 'drivers'), { ...d, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() });
-    driverIdMap[d.fullName] = driverRef.id;
+  console.log('\n--- Zaahid Driver Profile (Most Mischievous) ---');
+  const zaahidDriver = {
+    nationalID: '99999999',
+    fullName: 'Zaahid Abdulmalik',
+    phoneNumber: '+254712345600',
+    email: 'zaahid.driver@roadsafe360.go.ke',
+    bloodGroup: 'O-',
+    emergencyContact: '+254712345601',
+    pointsBalance: 0,
+    status: 'suspended',
+    riskScore: 0.99,
+  };
+  const driverRef = await addDoc(collection(db, 'drivers'), {
+    ...zaahidDriver,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  });
+  await addDoc(collection(db, 'licences'), {
+    licenceNumber: 'K999999',
+    licenceClass: 'B',
+    issueDate: '2022-06-15',
+    expiryDate: '2024-06-15',
+    status: 'suspended',
+    driverId: driverRef.id,
+    vehicleCategories: ['Private', 'Motorcycle'],
+    endorsements: [],
+    createdAt: new Date().toISOString(),
+  });
+  console.log('  Zaahid Abdulmalik (99999999) - 0/20 pts - SUSPENDED - Risk: 99%');
 
-    const licenceClass = licenceClasses[Math.floor(Math.random() * licenceClasses.length)];
-    const licenceNumber = `K${String(Math.floor(100000 + Math.random() * 900000))}`;
-    await addDoc(collection(db, 'licences'), {
-      licenceNumber,
-      licenceClass,
-      issueDate: '2024-01-01',
-      expiryDate: '2029-01-01',
-      status: d.status === 'suspended' ? 'suspended' : 'active',
-      driverId: driverRef.id,
-      vehicleCategories: ['Private'],
-      endorsements: [],
-      createdAt: new Date().toISOString(),
-    });
-    console.log(`  ✓ ${d.fullName} (${d.nationalID}) — ${d.pointsBalance}/20 pts`);
-  }
-
-  // Link the "driver" quick-login user to Brian Kareithi
-  if (driverUidMap['driver'] && driverIdMap['Brian Kareithi']) {
-    await setDoc(doc(db, 'users', driverUidMap['driver']), {
-      uid: driverUidMap['driver'],
-      email: 'driver@roadsafe360.go.ke',
-      role: 'driver',
-      displayName: 'Brian Kareithi',
-      profileId: driverIdMap['Brian Kareithi'],
+  const driverUid = uidMap['zaahid.driver@roadsafe360.go.ke'];
+  if (driverUid) {
+    await setDoc(doc(db, 'users', driverUid), {
+      profileId: driverRef.id,
     }, { merge: true });
   }
 
-  // ── PART 3: Offence Categories ──
-  console.log('\n─── Offence Categories ───');
+  console.log('\n--- Police Officers ---');
+  for (const o of policeOfficers) {
+    const officerRef = await addDoc(collection(db, 'policeOfficers'), { ...o, createdAt: new Date().toISOString() });
+    const userUid = uidMap[o.email];
+    if (userUid) {
+      await setDoc(doc(db, 'users', userUid), { profileId: officerRef.id }, { merge: true });
+    }
+    console.log('  ' + o.name + ' (' + o.badgeNumber + ') - ' + o.region);
+  }
+
+  console.log('\n--- Offence Categories ---');
   for (const oc of offenceCategories) {
     await addDoc(collection(db, 'offenceCategories'), oc);
-    console.log(`  ✓ ${oc.code} — ${oc.name} (${oc.demeritPoints} pts)`);
+    console.log('  ' + oc.code + ' - ' + oc.name + ' (' + oc.demeritPoints + ' pts)');
   }
 
-  // ── PART 4: Sample Offences ──
-  console.log('\n─── Sample Offences ───');
-  const driversSnap = await getDocs(collection(db, 'drivers'));
-  const driverIds = driversSnap.docs.map(d => d.id);
-  const categoriesSnap = await getDocs(collection(db, 'offenceCategories'));
-  const catIds = categoriesSnap.docs.map(d => ({ id: d.id, data: d.data() }));
-
-  const locations = [
-    '-1.2921,36.8219',  '-4.0435,39.6682',  '-0.1022,34.7617',
-    '-0.3031,36.0800',  '0.5143,35.2698',   '-1.0384,37.0834',
-  ];
-
-  for (let i = 0; i < 20; i++) {
-    const driverId = driverIds[Math.floor(Math.random() * driverIds.length)];
-    const cat = catIds[Math.floor(Math.random() * catIds.length)];
-    const date = new Date();
-    date.setMonth(date.getMonth() - Math.floor(Math.random() * 6));
-    await addDoc(collection(db, 'offences'), {
-      driverId,
-      offenceCategoryId: cat.id,
-      pointsDeducted: (cat.data as any).demeritPoints,
-      fineAmount: (cat.data as any).fineAmount,
-      gpsLocation: locations[Math.floor(Math.random() * locations.length)],
-      notes: `Sample ${(cat.data as any).name} offence`,
-      status: ['issued', 'paid', 'paid', 'resolved'][Math.floor(Math.random() * 4)],
-      timestamp: date.toISOString(),
-      createdAt: date.toISOString(),
-    });
-  }
-  console.log('  ✓ 20 sample offences created');
-
-  // ── PART 5: Appeals ──
-  console.log('\n─── Appeals ───');
-  for (let i = 0; i < 5; i++) {
-    const driverId = driverIds[Math.floor(Math.random() * driverIds.length)];
-    await addDoc(collection(db, 'appeals'), {
-      driverId,
-      offenceRecordId: 'sample',
-      reason: 'I believe this offence was issued in error. I was not exceeding the speed limit.',
-      status: ['submitted', 'under_review', 'approved', 'rejected'][Math.floor(Math.random() * 4)],
-      submissionDate: new Date().toISOString(),
-      createdAt: new Date().toISOString(),
-    });
-  }
-  console.log('  ✓ 5 sample appeals created');
-
-  // ── PART 6: Notifications ──
-  console.log('\n─── Notifications ───');
-  for (let i = 0; i < 10; i++) {
-    await addDoc(collection(db, 'notifications'), {
-      recipientID: driverIds[Math.floor(Math.random() * driverIds.length)],
-      type: ['email', 'sms', 'push', 'in_app'][Math.floor(Math.random() * 4)],
-      title: ['Offence Issued', 'Licence Expiring', 'Appeal Update', 'Suspension Warning', 'Payment Due'][Math.floor(Math.random() * 5)],
-      message: 'This is a sample notification for testing purposes.',
-      isRead: Math.random() > 0.5,
-      timestamp: new Date().toISOString(),
-    });
-  }
-  console.log('  ✓ 10 sample notifications created');
-
-  // ── PART 7: Settings ──
-  console.log('\n─── System Settings ───');
+  console.log('\n--- System Settings ---');
   for (const s of settings) {
     await addDoc(collection(db, 'settings'), s);
   }
-  console.log('  ✓ System settings configured');
+  console.log('  System settings configured');
 
-  // ── PART 8: Police Officers ──
-  console.log('\n─── Police Officers ───');
-  const officers = [
-    { badgeNumber: 'POL-001', name: 'Insp. John Kimani', email: 'officer@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Central Police Station' },
-    { badgeNumber: 'POL-002', name: 'Sgt. Alice Wanjiku', email: 'alice.wanjiku@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Mombasa Traffic Base' },
-    { badgeNumber: 'POL-003', name: 'Cpl. David Omondi', email: 'david.omondi@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Police Station' },
-  ];
-  for (const o of officers) {
-    const officerRef = await addDoc(collection(db, 'policeOfficers'), { ...o, createdAt: new Date().toISOString() });
-    if (o.email === 'officer@roadsafe360.go.ke' && driverUidMap['police']) {
-      await setDoc(doc(db, 'users', driverUidMap['police']), {
-        profileId: officerRef.id,
-      }, { merge: true });
-    }
-    console.log(`  ✓ ${o.name} (${o.badgeNumber})`);
-  }
-
-  // ── PART 9: Regions ──
-  console.log('\n─── Regions ───');
-  const regions = [
-    { name: 'Nairobi', code: 'NRB', officerCount: 45, driverCount: 125000, offenceCount: 12340, stations: 12 },
-    { name: 'Mombasa', code: 'MSA', officerCount: 28, driverCount: 68000, offenceCount: 7890, stations: 8 },
-    { name: 'Kisumu', code: 'KSM', officerCount: 15, driverCount: 42000, offenceCount: 4560, stations: 5 },
-    { name: 'Nakuru', code: 'NKR', officerCount: 12, driverCount: 38000, offenceCount: 3890, stations: 4 },
-    { name: 'Eldoret', code: 'ELD', officerCount: 10, driverCount: 31000, offenceCount: 2980, stations: 4 },
-    { name: 'Thika', code: 'THK', officerCount: 8, driverCount: 28000, offenceCount: 2340, stations: 3 },
-  ];
+  console.log('\n--- Regions ---');
   for (const r of regions) {
     await addDoc(collection(db, 'regions'), r);
   }
-  console.log('  ✓ 6 regions registered');
+  console.log('  8 regions registered');
 
-  // ── PART 10: Link authority user ──
-  if (driverUidMap['authority']) {
-    await setDoc(doc(db, 'users', driverUidMap['authority']), {
-      profileId: 'authority-profile',
-    }, { merge: true });
-  }
-
-  // Sign out so the session doesn't persist
   await auth.signOut();
 
-  console.log('\n✅ Seeding complete!');
-  console.log('   Quick logins are now fully functional.\n');
+  console.log('\nSeeding complete!');
+  console.log('Zaahid Abdulmalik is both admin and the most mischievous driver (suspended, 0 pts, 99% risk).');
+  console.log('No mock data. All data is stored in Firebase Firestore.\n');
   process.exit(0);
 }
 

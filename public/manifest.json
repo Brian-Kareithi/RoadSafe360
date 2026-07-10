@@ -1,11 +1,13 @@
 {
-  "name": "RoadSafe360",
+  "name": "RoadSafe360 - Road Safety Management",
   "short_name": "RoadSafe360",
   "description": "Intelligent Driver Demerit & Road Safety Management System",
   "start_url": "/auth",
   "display": "standalone",
+  "orientation": "portrait",
   "background_color": "#ffffff",
-  "theme_color": "#18181b",
+  "theme_color": "#BB2020",
+  "categories": ["government", "transportation", "utilities"],
   "icons": [
     { "src": "/icon.jpg", "sizes": "192x192", "type": "image/jpeg" },
     { "src": "/icon.jpg", "sizes": "512x512", "type": "image/jpeg" }

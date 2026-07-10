@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useCollection } from '@/hooks/useFirestore';
+import { useAuth } from '@/contexts/AuthContext';
 import { formatCurrency, formatDateTime, getDemeritStatus } from '@/lib/format';
 import { FiShield, FiAlertTriangle, FiFileText, FiBell, FiDownload, FiClock, FiArrowRight } from 'react-icons/fi';
 import Link from 'next/link';
@@ -12,12 +13,13 @@ import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, 
 const COLORS = ['#22c55e', '#f59e0b', '#ef4444'];
 
 export default function DriverDashboard() {
+  const { profile } = useAuth();
   const { data: offences } = useCollection('offences');
   const { data: appeals } = useCollection('appeals');
   const { data: notifications } = useCollection('notifications');
   const { data: drivers } = useCollection('drivers');
 
-  const driver = drivers[0] as any;
+  const driver = drivers.find((d: any) => d.id === profile?.profileId) || drivers[0] as any;
   const balance = driver?.pointsBalance ?? 20;
   const status = getDemeritStatus(balance);
   const driverOffences = offences.filter((o: any) => o.driverId === driver?.id);
