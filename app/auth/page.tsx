@@ -41,6 +41,7 @@ export default function AuthPage() {
     try {
       await login(email, password);
       toast.success('Welcome to RoadSafe360');
+      setSubmitting(false);
     } catch (err: any) {
       toast.error(err.message || 'Login failed');
       setSubmitting(false);
@@ -52,6 +53,7 @@ export default function AuthPage() {
     try {
       await login(creds.email, creds.password);
       toast.success('Logged in successfully');
+      setSubmitting(false);
     } catch (err: any) {
       toast.error(err.message);
       setSubmitting(false);

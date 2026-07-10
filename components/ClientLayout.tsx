@@ -5,10 +5,15 @@ import { ThemeProvider } from '@/contexts/ThemeContext';
 import { AuthProvider } from '@/contexts/AuthContext';
 import { DashboardShell } from '@/components/DashboardShell';
 import { PWAInstallPrompt } from '@/components/PWAInstallPrompt';
-
 import { Toaster } from 'react-hot-toast';
+import { useEffect } from 'react';
 
 export function ClientLayout({ children }: { children: React.ReactNode }) {
+  useEffect(() => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(r => r.unregister()));
+    }
+  }, []);
   const pathname = usePathname();
   const isAuth = pathname === '/auth' || pathname === '/';
 
