@@ -15,37 +15,60 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const staff = [
-  { email: 'zaahid@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', displayName: 'Zaahid Abdulmalik' },
-  { email: 'zaahid.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Zaahid Abdulmalik' },
+// ─── ROLE ASSIGNMENT ───
+// Admin: Aisha Abubakar (lady)
+// Authority: Khalid Salad
+// Police (2): Mohammed Karshe, Adnan Ali
+// Drivers (10): rest + staff also get off-duty driver profiles
+
+const staffAccounts = [
+  // Admin + her off-duty driver profile
+  { email: 'aisha@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', displayName: 'Aisha Abubakar' },
+  { email: 'aisha.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Aisha Abubakar' },
+  // Authority + his off-duty driver profile
   { email: 'khalid@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', displayName: 'Khalid Salad' },
-  { email: 'aisha@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Aisha Abubakar' },
-  { email: 'naila@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Naila Amour' },
-  { email: 'rania@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Rania Bahlewa' },
-  { email: 'zeitun@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Zeitun Hussein' },
-  { email: 'reyhan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Reyhan Fuad' },
-  { email: 'turq@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Turq Mahamud' },
-  { email: 'fenz@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Fenz Abdisalam' },
-  { email: 'umulkheir@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'UmulKheir Aden' },
+  { email: 'khalid.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Khalid Salad' },
+  // Police 1 + off-duty driver profile
   { email: 'mohammed@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Mohammed Karshe' },
-  { email: 'faizaan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Faizaan Mohammed' },
+  { email: 'mohammed.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Mohammed Karshe' },
+  // Police 2 + off-duty driver profile
   { email: 'adnan@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Adnan Ali' },
-  { email: 'abdulhameed@roadsafe360.go.ke', password: 'Officer123!', role: 'police', displayName: 'Abdulhameed Saleh' },
+  { email: 'adnan.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Adnan Ali' },
+  // 10 pure drivers
+  { email: 'zaahid.driver@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Zaahid Abdulmalik' },
+  { email: 'naila@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Naila Amour' },
+  { email: 'rania@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Rania Bahlewa' },
+  { email: 'zeitun@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Zeitun Hussein' },
+  { email: 'reyhan@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Reyhan Fuad' },
+  { email: 'turq@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Turq Mahamud' },
+  { email: 'fenz@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Fenz Abdisalam' },
+  { email: 'umulkheir@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'UmulKheir Aden' },
+  { email: 'faizaan@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Faizaan Mohammed' },
+  { email: 'abdulhameed@roadsafe360.go.ke', password: 'Driver123!', role: 'driver', displayName: 'Abdulhameed Saleh' },
 ];
 
+// Only 2 police officers in the force
 const policeOfficers = [
-  { badgeNumber: 'POL-001', name: 'Aisha Abubakar', email: 'aisha@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Central Police Station' },
-  { badgeNumber: 'POL-002', name: 'Naila Amour', email: 'naila@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Mombasa Traffic Base' },
-  { badgeNumber: 'POL-003', name: 'Rania Bahlewa', email: 'rania@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Police Station' },
-  { badgeNumber: 'POL-004', name: 'Zeitun Hussein', email: 'zeitun@roadsafe360.go.ke', region: 'Nakuru', assignedStation: 'Nakuru Traffic Office' },
-  { badgeNumber: 'POL-005', name: 'Reyhan Fuad', email: 'reyhan@roadsafe360.go.ke', region: 'Eldoret', assignedStation: 'Eldoret Police Base' },
-  { badgeNumber: 'POL-006', name: 'Turq Mahamud', email: 'turq@roadsafe360.go.ke', region: 'Thika', assignedStation: 'Thika Traffic Unit' },
-  { badgeNumber: 'POL-007', name: 'Fenz Abdisalam', email: 'fenz@roadsafe360.go.ke', region: 'Machakos', assignedStation: 'Machakos Police Station' },
-  { badgeNumber: 'POL-008', name: 'UmulKheir Aden', email: 'umulkheir@roadsafe360.go.ke', region: 'Nyeri', assignedStation: 'Nyeri Traffic Base' },
-  { badgeNumber: 'POL-009', name: 'Mohammed Karshe', email: 'mohammed@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Kilimani Police Station' },
-  { badgeNumber: 'POL-010', name: 'Faizaan Mohammed', email: 'faizaan@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Nyali Traffic Office' },
-  { badgeNumber: 'POL-011', name: 'Adnan Ali', email: 'adnan@roadsafe360.go.ke', region: 'Kisumu', assignedStation: 'Kisumu Traffic Base' },
-  { badgeNumber: 'POL-012', name: 'Abdulhameed Saleh', email: 'abdulhameed@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'CBD Traffic Office' },
+  { badgeNumber: 'POL-001', name: 'Mohammed Karshe', email: 'mohammed@roadsafe360.go.ke', region: 'Nairobi', assignedStation: 'Kilimani Police Station' },
+  { badgeNumber: 'POL-002', name: 'Adnan Ali', email: 'adnan@roadsafe360.go.ke', region: 'Mombasa', assignedStation: 'Mombasa Traffic Base' },
+];
+
+// 14 driver profiles (10 pure + 4 off-duty for admin/authority/police)
+const driverProfiles = [
+  { nationalID: '99999999', fullName: 'Zaahid Abdulmalik', email: 'zaahid.driver@roadsafe360.go.ke', phoneNumber: '+254712345600', bloodGroup: 'O-', emergencyContact: '+254712345601', pointsBalance: 0, status: 'suspended', riskScore: 0.99 },
+  { nationalID: '11111111', fullName: 'Aisha Abubakar', email: 'aisha.driver@roadsafe360.go.ke', phoneNumber: '+254712345601', bloodGroup: 'A+', emergencyContact: '+254712345602', pointsBalance: 18, status: 'active', riskScore: 0.10 },
+  { nationalID: '22222222', fullName: 'Khalid Salad', email: 'khalid.driver@roadsafe360.go.ke', phoneNumber: '+254712345602', bloodGroup: 'B+', emergencyContact: '+254712345603', pointsBalance: 16, status: 'active', riskScore: 0.15 },
+  { nationalID: '33333333', fullName: 'Mohammed Karshe', email: 'mohammed.driver@roadsafe360.go.ke', phoneNumber: '+254712345603', bloodGroup: 'O+', emergencyContact: '+254712345604', pointsBalance: 20, status: 'active', riskScore: 0.05 },
+  { nationalID: '44444444', fullName: 'Adnan Ali', email: 'adnan.driver@roadsafe360.go.ke', phoneNumber: '+254712345604', bloodGroup: 'AB+', emergencyContact: '+254712345605', pointsBalance: 19, status: 'active', riskScore: 0.08 },
+  { nationalID: '55555551', fullName: 'Naila Amour', email: 'naila@roadsafe360.go.ke', phoneNumber: '+254712345605', bloodGroup: 'A-', emergencyContact: '+254712345606', pointsBalance: 14, status: 'active', riskScore: 0.28 },
+  { nationalID: '55555552', fullName: 'Rania Bahlewa', email: 'rania@roadsafe360.go.ke', phoneNumber: '+254712345606', bloodGroup: 'B-', emergencyContact: '+254712345607', pointsBalance: 8, status: 'warning', riskScore: 0.55 },
+  { nationalID: '55555553', fullName: 'Zeitun Hussein', email: 'zeitun@roadsafe360.go.ke', phoneNumber: '+254712345607', bloodGroup: 'O+', emergencyContact: '+254712345608', pointsBalance: 12, status: 'active', riskScore: 0.32 },
+  { nationalID: '55555554', fullName: 'Reyhan Fuad', email: 'reyhan@roadsafe360.go.ke', phoneNumber: '+254712345608', bloodGroup: 'AB-', emergencyContact: '+254712345609', pointsBalance: 5, status: 'final_warning', riskScore: 0.68 },
+  { nationalID: '55555555', fullName: 'Turq Mahamud', email: 'turq@roadsafe360.go.ke', phoneNumber: '+254712345609', bloodGroup: 'A+', emergencyContact: '+254712345610', pointsBalance: 10, status: 'warning', riskScore: 0.42 },
+  { nationalID: '55555556', fullName: 'Fenz Abdisalam', email: 'fenz@roadsafe360.go.ke', phoneNumber: '+254712345610', bloodGroup: 'B+', emergencyContact: '+254712345611', pointsBalance: 17, status: 'active', riskScore: 0.18 },
+  { nationalID: '55555557', fullName: 'UmulKheir Aden', email: 'umulkheir@roadsafe360.go.ke', phoneNumber: '+254712345611', bloodGroup: 'O-', emergencyContact: '+254712345612', pointsBalance: 3, status: 'suspension_review', riskScore: 0.78 },
+  { nationalID: '55555558', fullName: 'Faizaan Mohammed', email: 'faizaan@roadsafe360.go.ke', phoneNumber: '+254712345612', bloodGroup: 'A+', emergencyContact: '+254712345613', pointsBalance: 15, status: 'active', riskScore: 0.22 },
+  { nationalID: '55555559', fullName: 'Abdulhameed Saleh', email: 'abdulhameed@roadsafe360.go.ke', phoneNumber: '+254712345613', bloodGroup: 'AB+', emergencyContact: '+254712345614', pointsBalance: 1, status: 'suspension_review', riskScore: 0.85 },
 ];
 
 const offenceCategories = [
@@ -79,15 +102,17 @@ const settings = [
 ];
 
 const regions = [
-  { name: 'Nairobi', code: 'NRB', officerCount: 45, driverCount: 125000, offenceCount: 12340, stations: 12 },
-  { name: 'Mombasa', code: 'MSA', officerCount: 28, driverCount: 68000, offenceCount: 7890, stations: 8 },
-  { name: 'Kisumu', code: 'KSM', officerCount: 15, driverCount: 42000, offenceCount: 4560, stations: 5 },
-  { name: 'Nakuru', code: 'NKR', officerCount: 12, driverCount: 38000, offenceCount: 3890, stations: 4 },
-  { name: 'Eldoret', code: 'ELD', officerCount: 10, driverCount: 31000, offenceCount: 2980, stations: 4 },
-  { name: 'Thika', code: 'THK', officerCount: 8, driverCount: 28000, offenceCount: 2340, stations: 3 },
-  { name: 'Machakos', code: 'MKS', officerCount: 7, driverCount: 22000, offenceCount: 1870, stations: 3 },
-  { name: 'Nyeri', code: 'NYR', officerCount: 6, driverCount: 18000, offenceCount: 1560, stations: 2 },
+  { name: 'Nairobi', code: 'NRB', officerCount: 25, driverCount: 125000, offenceCount: 12340, stations: 12 },
+  { name: 'Mombasa', code: 'MSA', officerCount: 15, driverCount: 68000, offenceCount: 7890, stations: 8 },
+  { name: 'Kisumu', code: 'KSM', officerCount: 10, driverCount: 42000, offenceCount: 4560, stations: 5 },
+  { name: 'Nakuru', code: 'NKR', officerCount: 8, driverCount: 38000, offenceCount: 3890, stations: 4 },
+  { name: 'Eldoret', code: 'ELD', officerCount: 7, driverCount: 31000, offenceCount: 2980, stations: 4 },
+  { name: 'Thika', code: 'THK', officerCount: 6, driverCount: 28000, offenceCount: 2340, stations: 3 },
+  { name: 'Machakos', code: 'MKS', officerCount: 5, driverCount: 22000, offenceCount: 1870, stations: 3 },
+  { name: 'Nyeri', code: 'NYR', officerCount: 4, driverCount: 18000, offenceCount: 1560, stations: 2 },
 ];
+
+const licenceClasses = ['A', 'B', 'C', 'D', 'E', 'G'];
 
 async function createOrUpdateAuthUser(email: string, password: string) {
   try {
@@ -95,7 +120,7 @@ async function createOrUpdateAuthUser(email: string, password: string) {
     return cred.user.uid;
   } catch (err: any) {
     if (err.code === 'auth/email-already-in-use') {
-      console.log('  ~ ' + email + ' already exists, signing in to update profile');
+      console.log('  ~ ' + email + ' already exists, signing in to update');
       const cred = await signInWithEmailAndPassword(auth, email, password);
       return cred.user.uid;
     }
@@ -104,11 +129,12 @@ async function createOrUpdateAuthUser(email: string, password: string) {
 }
 
 async function seed() {
-  console.log('Seeding RoadSafe360 with staff accounts and system data...\n');
+  console.log('Seeding RoadSafe360...\n');
 
-  console.log('--- Auth Users (Staff) ---');
+  // ── 1. AUTH USERS ──
+  console.log('--- Auth Users ---');
   const uidMap: Record<string, string> = {};
-  for (const s of staff) {
+  for (const s of staffAccounts) {
     try {
       const uid = await createOrUpdateAuthUser(s.email, s.password);
       await setDoc(doc(db, 'users', uid), {
@@ -117,47 +143,47 @@ async function seed() {
       uidMap[s.email] = uid;
       console.log('  ' + s.displayName + ' (' + s.email + ') - ' + s.role);
     } catch (err: any) {
-      console.log('  Failed to create ' + s.email + ': ' + err.message);
+      console.log('  FAILED ' + s.email + ': ' + err.message);
     }
   }
 
-  console.log('\n--- Zaahid Driver Profile (Most Mischievous) ---');
-  const zaahidDriver = {
-    nationalID: '99999999',
-    fullName: 'Zaahid Abdulmalik',
-    phoneNumber: '+254712345600',
-    email: 'zaahid.driver@roadsafe360.go.ke',
-    bloodGroup: 'O-',
-    emergencyContact: '+254712345601',
-    pointsBalance: 0,
-    status: 'suspended',
-    riskScore: 0.99,
-  };
-  const driverRef = await addDoc(collection(db, 'drivers'), {
-    ...zaahidDriver,
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
-  });
-  await addDoc(collection(db, 'licences'), {
-    licenceNumber: 'K999999',
-    licenceClass: 'B',
-    issueDate: '2022-06-15',
-    expiryDate: '2024-06-15',
-    status: 'suspended',
-    driverId: driverRef.id,
-    vehicleCategories: ['Private', 'Motorcycle'],
-    endorsements: [],
-    createdAt: new Date().toISOString(),
-  });
-  console.log('  Zaahid Abdulmalik (99999999) - 0/20 pts - SUSPENDED - Risk: 99%');
+  // ── 2. DRIVERS & LICENCES ──
+  console.log('\n--- Drivers & Licences ---');
+  const driverIdMap: Record<string, string> = {};
+  for (const d of driverProfiles) {
+    const driverRef = await addDoc(collection(db, 'drivers'), {
+      ...d,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    });
+    driverIdMap[d.fullName] = driverRef.id;
 
-  const driverUid = uidMap['zaahid.driver@roadsafe360.go.ke'];
-  if (driverUid) {
-    await setDoc(doc(db, 'users', driverUid), {
-      profileId: driverRef.id,
-    }, { merge: true });
+    const licenceClass = licenceClasses[Math.floor(Math.random() * licenceClasses.length)];
+    const licenceNumber = 'K' + String(100000 + Math.floor(Math.random() * 900000));
+    const isSuspended = d.status === 'suspended' || d.status === 'suspension_review';
+    await addDoc(collection(db, 'licences'), {
+      licenceNumber,
+      licenceClass,
+      issueDate: '2023-06-01',
+      expiryDate: '2028-06-01',
+      status: isSuspended ? 'suspended' : 'active',
+      driverId: driverRef.id,
+      vehicleCategories: ['Private'],
+      endorsements: [],
+      createdAt: new Date().toISOString(),
+    });
+
+    // Link driver auth user to driver profile
+    const driverAuthEmail = d.email;
+    const driverUid = uidMap[driverAuthEmail];
+    if (driverUid) {
+      await setDoc(doc(db, 'users', driverUid), { profileId: driverRef.id }, { merge: true });
+    }
+
+    console.log('  ' + d.fullName + ' (' + d.nationalID + ') - ' + d.pointsBalance + '/20 pts - ' + d.status);
   }
 
+  // ── 3. POLICE OFFICERS (only 2) ──
   console.log('\n--- Police Officers ---');
   for (const o of policeOfficers) {
     const officerRef = await addDoc(collection(db, 'policeOfficers'), { ...o, createdAt: new Date().toISOString() });
@@ -168,29 +194,145 @@ async function seed() {
     console.log('  ' + o.name + ' (' + o.badgeNumber + ') - ' + o.region);
   }
 
+  // ── 4. OFFENCE CATEGORIES ──
   console.log('\n--- Offence Categories ---');
+  const catIdMap: Record<string, string> = {};
   for (const oc of offenceCategories) {
-    await addDoc(collection(db, 'offenceCategories'), oc);
-    console.log('  ' + oc.code + ' - ' + oc.name + ' (' + oc.demeritPoints + ' pts)');
+    const ref = await addDoc(collection(db, 'offenceCategories'), oc);
+    catIdMap[oc.code] = ref.id;
+    console.log('  ' + oc.code + ' - ' + oc.name);
   }
 
-  console.log('\n--- System Settings ---');
+  // ── 5. SAMPLE OFFENCES (Zaahid gets many, others get a few) ──
+  console.log('\n--- Sample Offences ---');
+  const zaahidId = driverIdMap['Zaahid Abdulmalik'];
+  const karsheDriverId = driverIdMap['Mohammed Karshe'];
+  const aishaDriverId = driverIdMap['Aisha Abubakar'];
+  const nailaId = driverIdMap['Naila Amour'];
+  const raniaId = driverIdMap['Rania Bahlewa'];
+  const reyhanId = driverIdMap['Reyhan Fuad'];
+  const umulkheirId = driverIdMap['UmulKheir Aden'];
+  const abdulhameedId = driverIdMap['Abdulhameed Saleh'];
+
+  const locations = [
+    '-1.2921,36.8219', '-4.0435,39.6682', '-0.1022,34.7617',
+    '-0.3031,36.0800', '0.5143,35.2698', '-1.0384,37.0834',
+  ];
+
+  // Zaahid - the reckless one - 8 offences
+  const zaahidOffences = [
+    { cat: 'SPD-01', pts: 6, fine: 10000 },
+    { cat: 'SPD-01', pts: 6, fine: 10000 },
+    { cat: 'DUI-01', pts: 10, fine: 100000 },
+    { cat: 'RDL-01', pts: 8, fine: 30000 },
+    { cat: 'TSG-01', pts: 3, fine: 5000 },
+    { cat: 'RTL-01', pts: 4, fine: 8000 },
+    { cat: 'NLD-01', pts: 4, fine: 20000 },
+    { cat: 'HLM-01', pts: 2, fine: 10000 },
+  ];
+  for (let i = 0; i < zaahidOffences.length; i++) {
+    const o = zaahidOffences[i];
+    const d = new Date();
+    d.setMonth(d.getMonth() - (zaahidOffences.length - i));
+    await addDoc(collection(db, 'offences'), {
+      driverId: zaahidId,
+      offenceCategoryId: catIdMap[o.cat],
+      pointsDeducted: o.pts,
+      fineAmount: o.fine,
+      gpsLocation: locations[i % locations.length],
+      notes: o.cat === 'DUI-01' ? 'Found driving under influence - arrested at checkpoint' :
+             o.cat === 'RDL-01' ? 'Swerving through traffic on Mombasa Road' :
+             o.cat === 'SPD-01' ? 'Clock at 145 km/h in 80 zone' : 'Traffic violation',
+      status: i < 3 ? 'paid' : 'issued',
+      timestamp: d.toISOString(),
+      createdAt: d.toISOString(),
+    });
+  }
+  console.log('  Zaahid Abdulmalik - 8 offences (most reckless)');
+
+  // Other drivers - 1-2 offences each
+  const otherOffences = [
+    { driverId: nailaId, cat: 'SPD-02', pts: 3, fine: 5000 },
+    { driverId: nailaId, cat: 'PRK-01', pts: 1, fine: 1500 },
+    { driverId: raniaId, cat: 'TSG-01', pts: 3, fine: 5000 },
+    { driverId: raniaId, cat: 'SNL-01', pts: 1, fine: 2000 },
+    { driverId: reyhanId, cat: 'RTL-01', pts: 4, fine: 8000 },
+    { driverId: reyhanId, cat: 'SPD-01', pts: 6, fine: 10000 },
+    { driverId: umulkheirId, cat: 'NIN-01', pts: 4, fine: 25000 },
+    { driverId: abdulhameedId, cat: 'DUI-01', pts: 10, fine: 100000 },
+    { driverId: abdulhameedId, cat: 'SPD-01', pts: 6, fine: 10000 },
+    { driverId: karsheDriverId, cat: 'PRK-01', pts: 1, fine: 1500 },
+    { driverId: aishaDriverId, cat: 'SNL-01', pts: 1, fine: 2000 },
+  ];
+  for (const o of otherOffences) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - Math.floor(Math.random() * 4));
+    await addDoc(collection(db, 'offences'), {
+      driverId: o.driverId,
+      offenceCategoryId: catIdMap[o.cat],
+      pointsDeducted: o.pts,
+      fineAmount: o.fine,
+      gpsLocation: locations[Math.floor(Math.random() * locations.length)],
+      notes: 'Traffic violation',
+      status: Math.random() > 0.4 ? 'paid' : 'issued',
+      timestamp: d.toISOString(),
+      createdAt: d.toISOString(),
+    });
+  }
+  console.log('  Other drivers - sample offences added');
+
+  // ── 6. APPEALS (Zaahid has an appeal) ──
+  console.log('\n--- Appeals ---');
+  await addDoc(collection(db, 'appeals'), {
+    driverId: zaahidId,
+    offenceRecordId: 'pending',
+    reason: 'I was not driving under influence. The breathalyzer reading was inaccurate.',
+    status: 'submitted',
+    submissionDate: new Date().toISOString(),
+    createdAt: new Date().toISOString(),
+  });
+  console.log('  Zaahid Abdulmalik - 1 appeal submitted');
+
+  // ── 7. SETTINGS ──
+  console.log('\n--- Settings ---');
   for (const s of settings) {
     await addDoc(collection(db, 'settings'), s);
   }
-  console.log('  System settings configured');
+  console.log('  Settings configured');
 
+  // ── 8. REGIONS ──
   console.log('\n--- Regions ---');
   for (const r of regions) {
     await addDoc(collection(db, 'regions'), r);
   }
   console.log('  8 regions registered');
 
+  // ── 9. NOTIFICATIONS ──
+  console.log('\n--- Notifications ---');
+  const allDriverIds = Object.values(driverIdMap);
+  for (let i = 0; i < 8; i++) {
+    const randomDriver = allDriverIds[Math.floor(Math.random() * allDriverIds.length)];
+    await addDoc(collection(db, 'notifications'), {
+      recipientID: randomDriver,
+      type: ['email', 'sms', 'in_app'][Math.floor(Math.random() * 3)],
+      title: ['Offence Issued', 'Licence Expiring', 'Appeal Update', 'Payment Reminder'][Math.floor(Math.random() * 4)],
+      message: 'Please check your dashboard for details.',
+      isRead: Math.random() > 0.5,
+      timestamp: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+    });
+  }
+  console.log('  8 notifications created');
+
   await auth.signOut();
 
-  console.log('\nSeeding complete!');
-  console.log('Zaahid Abdulmalik is both admin and the most mischievous driver (suspended, 0 pts, 99% risk).');
-  console.log('No mock data. All data is stored in Firebase Firestore.\n');
+  console.log('\n=== SEED COMPLETE ===');
+  console.log('Admin: Aisha Abubakar (aisha@roadsafe360.go.ke / Admin123!)');
+  console.log('Authority: Khalid Salad (khalid@roadsafe360.go.ke / Auth123!)');
+  console.log('Police: Mohammed Karshe (mohammed@roadsafe360.go.ke / Officer123!)');
+  console.log('Police: Adnan Ali (adnan@roadsafe360.go.ke / Officer123!)');
+  console.log('Driver (reckless): Zaahid Abdulmalik (zaahid.driver@roadsafe360.go.ke / Driver123!)');
+  console.log('All staff also have off-duty driver profiles.\n');
   process.exit(0);
 }
 

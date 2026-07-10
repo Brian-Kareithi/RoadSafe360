@@ -23,7 +23,7 @@ const newOffences = [
 async function addNewOffences() {
   console.log('Adding new matatu/nganya offence categories...\n');
 
-  await signInWithEmailAndPassword(auth, 'zaahid@roadsafe360.go.ke', 'Admin123!');
+  await signInWithEmailAndPassword(auth, 'aisha@roadsafe360.go.ke', 'Admin123!');
   console.log('  ✓ Authenticated as admin\n');
 
   for (const oc of newOffences) {
