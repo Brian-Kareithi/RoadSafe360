@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { FiMapPin, FiCrosshair, FiZoomIn } from 'react-icons/fi';
+import { FiCrosshair } from 'react-icons/fi';
 
 interface MapPickerProps {
   value: string;
@@ -12,22 +12,27 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
   const mapRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const markerRef = useRef<any>(null);
+  const initStarted = useRef(false);
   const [mapReady, setMapReady] = useState(false);
   const [address, setAddress] = useState('');
   const [locating, setLocating] = useState(false);
 
   useEffect(() => {
-    let L: any;
-    let map: any;
+    if (initStarted.current) return;
+    initStarted.current = true;
+
+    let destroyed = false;
 
     async function init() {
-      if (!mapRef.current || mapInstanceRef.current) return;
+      if (!mapRef.current) return;
       const Lmod = await import('leaflet');
-      L = Lmod.default || Lmod;
+      if (destroyed || !mapRef.current) return;
+      const L = Lmod.default || Lmod;
 
       await import('leaflet/dist/leaflet.css');
+      if (destroyed || !mapRef.current) return;
 
-      map = L.map(mapRef.current, { zoomControl: false }).setView([-1.2921, 36.8219], 13);
+      const map = L.map(mapRef.current, { zoomControl: false }).setView([-1.2921, 36.8219], 13);
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
         maxZoom: 19,
@@ -44,26 +49,34 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
         shadowSize: [41, 41],
       });
 
-      markerRef.current = L.marker([-1.2921, 36.8219], { icon: defaultIcon, draggable: true }).addTo(map);
-      updateValue(-1.2921, 36.8219);
-
-      markerRef.current.on('dragend', () => {
-        const pos = markerRef.current.getLatLng();
+      const marker = L.marker([-1.2921, 36.8219], { icon: defaultIcon, draggable: true }).addTo(map);
+      marker.on('dragend', () => {
+        const pos = marker.getLatLng();
         updateValue(pos.lat, pos.lng);
       });
 
       map.on('click', (e: any) => {
-        markerRef.current.setLatLng(e.latlng);
+        marker.setLatLng(e.latlng);
         updateValue(e.latlng.lat, e.latlng.lng);
       });
 
-      mapInstanceRef.current = map;
-      setMapReady(true);
+      if (destroyed) { map.remove(); return; }
 
-      return () => { map.remove(); mapInstanceRef.current = null; };
+      mapInstanceRef.current = map;
+      markerRef.current = marker;
+      setMapReady(true);
+      updateValue(-1.2921, 36.8219);
     }
 
     init();
+
+    return () => {
+      destroyed = true;
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
   }, []);
 
   const updateValue = async (lat: number, lng: number) => {
@@ -99,7 +112,7 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
         <input
           type="text" value={value} readOnly
           className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
-          placeholder="Click map or use 📍 to set location"
+          placeholder="Click map or use to set location"
         />
         <button type="button" onClick={locateMe} disabled={locating}
           className="inline-flex items-center justify-center rounded-md border border-zinc-200 bg-white p-2 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 disabled:opacity-50">
@@ -107,7 +120,7 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
         </button>
       </div>
       {address && <p className="text-xs text-zinc-500">{address}</p>}
-      <div ref={mapRef} className="h-52 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden" />
+      <div ref={mapRef} className="h-52 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden" style={{ zIndex: 1 }} />
       {!mapReady && <div className="h-52 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-shimmer" />}
     </div>
   );
