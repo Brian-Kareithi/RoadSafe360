@@ -35,9 +35,9 @@ export default function DriverDashboard() {
   ];
 
   return (
-    <div className="space-y-6 py-6">
+    <div className="space-y-6 py-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">My Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight">My Dashboard</h1>
         <p className="text-zinc-500 dark:text-zinc-400 text-sm">Welcome back, {driver?.fullName || 'Driver'}</p>
       </div>
 
@@ -55,20 +55,20 @@ export default function DriverDashboard() {
               </ResponsiveContainer>
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
-                  <p className="text-3xl font-bold">{balance}</p>
+                  <p className="text-3xl font-bold tracking-tight">{balance}</p>
                   <p className="text-xs text-zinc-500">of 20 points</p>
                 </div>
               </div>
             </div>
             <div className={`mt-2 text-lg font-semibold ${status.color}`}>{status.label}</div>
-            <div className="mt-4 w-full space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Licence Status</span>
+            <div className="mt-4 w-full space-y-3">
+              <div className="flex justify-between items-center text-sm py-1.5 border-b border-zinc-100 dark:border-zinc-800">
+                <span className="text-zinc-500">Licence Status</span>
                 <Badge variant={driver?.status === 'active' ? 'success' : 'destructive'}>{driver?.status || 'Unknown'}</Badge>
               </div>
-              <div className="flex justify-between text-sm">
-                <span>Risk Score</span>
-                <span className="font-medium">{driver?.riskScore != null ? `${(driver.riskScore * 100).toFixed(0)}%` : 'N/A'}</span>
+              <div className="flex justify-between items-center text-sm py-1.5 border-b border-zinc-100 dark:border-zinc-800">
+                <span className="text-zinc-500">Risk Score</span>
+                <span className="font-semibold">{driver?.riskScore != null ? `${(driver.riskScore * 100).toFixed(0)}%` : 'N/A'}</span>
               </div>
             </div>
           </CardContent>
@@ -77,37 +77,37 @@ export default function DriverDashboard() {
         <Card className="lg:col-span-2">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle className="text-base">Recent Offences</CardTitle>
-            <Link href="/offences"><Button variant="ghost" size="sm">View All <FiArrowRight size={14} /></Button></Link>
+            <Link href="/offences"><Button variant="ghost" size="sm" className="gap-1">View All <FiArrowRight size={14} /></Button></Link>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3">
-              {driverOffences.slice(0, 4).map((o: any) => (
-                <div key={o.id} className="flex items-center justify-between py-2 border-b border-zinc-100 dark:border-zinc-800 last:border-0">
+            <div className="space-y-1">
+              {driverOffences.slice(0, 4).map((o: any, i: number) => (
+                <div key={o.id} className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
                   <div className="flex items-center gap-3">
-                    <div className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                      <FiAlertTriangle size={14} className="text-red-600" />
+                    <div className="h-9 w-9 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
+                      <FiAlertTriangle size={14} className="text-red-600 dark:text-red-400" />
                     </div>
                     <div>
-                      <p className="text-sm font-medium">{o.notes || 'Traffic Offence'}</p>
+                      <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">{o.notes || 'Traffic Offence'}</p>
                       <p className="text-xs text-zinc-500">{o.pointsDeducted} points deducted &middot; {formatCurrency(o.fineAmount)}</p>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <p className="text-xs text-zinc-400">{formatDateTime(o.timestamp)}</p>
+                  <div className="text-right flex items-center gap-3">
+                    <span className="text-xs text-zinc-400">{formatDateTime(o.timestamp)}</span>
                     <Badge variant={o.status === 'paid' ? 'success' : 'warning'}>{o.status}</Badge>
                   </div>
                 </div>
               ))}
-              {driverOffences.length === 0 && <p className="text-sm text-zinc-400">No offences recorded</p>}
+              {driverOffences.length === 0 && <p className="text-sm text-zinc-400 py-4 text-center">No offences recorded</p>}
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.05s' }}>
           <CardContent className="p-6 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+            <div className="h-11 w-11 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
               <FiFileText className="text-blue-600 dark:text-blue-400" size={20} />
             </div>
             <div>
@@ -116,9 +116,9 @@ export default function DriverDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
           <CardContent className="p-6 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+            <div className="h-11 w-11 rounded-xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
               <FiBell className="text-orange-600 dark:text-orange-400" size={20} />
             </div>
             <div>
@@ -127,9 +127,9 @@ export default function DriverDashboard() {
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="animate-fade-in-up" style={{ animationDelay: '0.15s' }}>
           <CardContent className="p-6 flex items-center gap-4">
-            <div className="h-10 w-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
+            <div className="h-11 w-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center">
               <FiDownload className="text-emerald-600 dark:text-emerald-400" size={20} />
             </div>
             <div>

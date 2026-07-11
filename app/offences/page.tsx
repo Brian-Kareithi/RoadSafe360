@@ -24,13 +24,13 @@ export default function OffencesPage() {
   }).sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
   return (
-    <div className="space-y-6 py-6">
+    <div className="space-y-6 py-6 animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Traffic Offences</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Traffic Offences</h1>
           <p className="text-zinc-500 text-sm">{offences.length} total offences</p>
         </div>
-        <Link href="/offences/new"><Button className="gap-2"><FiAlertTriangle size={16} /> Issue Offence</Button></Link>
+        <Link href="/offences/new"><Button className="gap-2 shadow-sm"><FiAlertTriangle size={16} /> Issue Offence</Button></Link>
       </div>
 
       <Card>
@@ -68,12 +68,12 @@ export default function OffencesPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((o: any) => (
-                <TableRow key={o.id}>
-                  <TableCell className="font-medium">{o.notes || 'Traffic Offence'}</TableCell>
-                  <TableCell className="text-sm text-zinc-500">{o.driverId?.slice(0, 8)}...</TableCell>
-                  <TableCell><Badge variant="destructive">{o.pointsDeducted} pts</Badge></TableCell>
-                  <TableCell>{formatCurrency(o.fineAmount)}</TableCell>
+              {filtered.map((o: any, i: number) => (
+                <TableRow key={o.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 30}ms` }}>
+                  <TableCell className="font-medium text-zinc-800 dark:text-zinc-200">{o.notes || 'Traffic Offence'}</TableCell>
+                  <TableCell className="text-sm text-zinc-500 font-mono">{o.driverId?.slice(0, 8)}...</TableCell>
+                  <TableCell><Badge variant="destructive" className="font-mono">{o.pointsDeducted} pts</Badge></TableCell>
+                  <TableCell className="font-medium">{formatCurrency(o.fineAmount)}</TableCell>
                   <TableCell>
                     <Badge variant={o.status === 'paid' ? 'success' : o.status === 'issued' ? 'warning' : o.status === 'contested' ? 'default' : 'secondary'}>{o.status}</Badge>
                   </TableCell>
@@ -81,7 +81,7 @@ export default function OffencesPage() {
                 </TableRow>
               ))}
               {filtered.length === 0 && (
-                <TableRow><TableCell colSpan={6} className="text-center text-zinc-400 py-8">No offences found</TableCell></TableRow>
+                <TableRow><TableCell colSpan={6} className="text-center text-zinc-400 py-10">No offences found</TableCell></TableRow>
               )}
             </TableBody>
           </Table>

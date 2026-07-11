@@ -18,9 +18,9 @@ export default function DriversPage() {
   );
 
   return (
-    <div className="space-y-6 py-6">
+    <div className="space-y-6 py-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold">Driver Management</h1>
+        <h1 className="text-2xl font-bold tracking-tight">Driver Management</h1>
         <p className="text-zinc-500 text-sm">{drivers.length} registered drivers</p>
       </div>
 
@@ -47,21 +47,28 @@ export default function DriversPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filtered.map((d: any) => (
-                <TableRow key={d.id}>
-                  <TableCell className="font-medium flex items-center gap-2">
-                    <FiUser size={14} className="text-zinc-400" /> {d.fullName}
+              {filtered.map((d: any, i: number) => (
+                <TableRow key={d.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 30}ms` }}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center gap-2.5">
+                      <div className="h-8 w-8 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
+                        <FiUser size={14} className="text-zinc-500" />
+                      </div>
+                      <span className="text-zinc-800 dark:text-zinc-200">{d.fullName}</span>
+                    </div>
                   </TableCell>
-                  <TableCell className="text-sm text-zinc-500">{d.nationalID}</TableCell>
+                  <TableCell className="text-sm text-zinc-500 font-mono">{d.nationalID}</TableCell>
                   <TableCell className="text-sm text-zinc-500">{d.phoneNumber}</TableCell>
-                  <TableCell><Badge variant={d.pointsBalance >= 15 ? 'success' : d.pointsBalance >= 10 ? 'warning' : 'destructive'}>{d.pointsBalance}/20</Badge></TableCell>
+                  <TableCell>
+                    <Badge variant={d.pointsBalance >= 15 ? 'success' : d.pointsBalance >= 10 ? 'warning' : 'destructive'} className="font-mono">{d.pointsBalance}/20</Badge>
+                  </TableCell>
                   <TableCell>
                     <Badge variant={d.status === 'active' ? 'success' : d.status === 'suspended' ? 'destructive' : 'secondary'}>{d.status}</Badge>
                   </TableCell>
-                  <TableCell><span className={`text-sm font-medium ${getRiskColor(d.riskScore)}`}>{getRiskLabel(d.riskScore)}</span></TableCell>
+                  <TableCell><span className={`text-sm font-semibold ${getRiskColor(d.riskScore)}`}>{getRiskLabel(d.riskScore)}</span></TableCell>
                 </TableRow>
               ))}
-              {filtered.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-zinc-400 py-8">No drivers found</TableCell></TableRow>}
+              {filtered.length === 0 && <TableRow><TableCell colSpan={6} className="text-center text-zinc-400 py-10">No drivers found</TableCell></TableRow>}
             </TableBody>
           </Table>
         </CardContent>
