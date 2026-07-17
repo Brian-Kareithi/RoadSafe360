@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { useCollection } from '@/hooks/useFirestore';
 import { useAuth } from '@/contexts/AuthContext';
 import { formatDate } from '@/lib/format';
-import { FiShield, FiDownload, FiPrinter, FiCheckCircle, FiAlertTriangle, FiCalendar, FiUser, FiHash, FiPhone, FiDroplet, FiTruck } from 'react-icons/fi';
+import { FiDownload, FiPrinter, FiCheckCircle, FiAlertTriangle, FiCalendar, FiUser, FiHash, FiPhone, FiDroplet, FiTruck } from 'react-icons/fi';
 import QRCode from 'react-qr-code';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
@@ -148,7 +148,9 @@ export default function DigitalLicencePage() {
           <div className={`p-7 ${isSuspended ? 'bg-red-600' : 'bg-[var(--primary)]'} text-white`}>
             <div className="flex items-center justify-between mb-5">
               <div className="flex items-center gap-2.5">
-                <FiShield size={22} />
+                <div className="h-7 w-7 rounded overflow-hidden bg-white/20">
+                  <img src="/logo.png" alt="" className="h-full w-full object-contain" />
+                </div>
                 <span className="font-bold text-sm tracking-wide">ROADSAFE360</span>
               </div>
               <div className={`px-3 py-1 rounded-full text-xs font-semibold ${isSuspended ? 'bg-red-500/50 text-red-50' : 'bg-white/20 text-white'}`}>

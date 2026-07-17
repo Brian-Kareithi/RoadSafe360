@@ -5,11 +5,12 @@
   "start_url": "/auth",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#BB2020",
+  "background_color": "#fafafa",
+  "theme_color": "#1e40af",
   "categories": ["government", "transportation", "utilities"],
   "icons": [
-    { "src": "/icon.jpg", "sizes": "192x192", "type": "image/jpeg" },
-    { "src": "/icon.jpg", "sizes": "512x512", "type": "image/jpeg" }
+    { "src": "/favicon_io/android-chrome-192x192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/favicon_io/android-chrome-512x512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/favicon_io/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
   ]
 }

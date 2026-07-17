@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { cn } from '@/lib/utils';
-import { FiShield, FiGrid, FiUsers, FiAlertTriangle, FiFileText, FiBarChart2, FiSettings, FiLogOut, FiMapPin, FiBell, FiSearch, FiX, FiChevronLeft, FiHome } from 'react-icons/fi';
+import { FiGrid, FiUsers, FiAlertTriangle, FiFileText, FiBarChart2, FiSettings, FiLogOut, FiMapPin, FiBell, FiSearch, FiX, FiChevronLeft, FiHome, FiShield } from 'react-icons/fi';
 
 const navLinks: Record<string, { label: string; href: string; icon: React.ComponentType<{ size?: number }> }[]> = {
   admin: [
@@ -56,8 +56,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       )}>
         <div className="flex items-center justify-between px-5 py-4 border-b border-[var(--sidebar-border)]">
           <div className="flex items-center gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-[var(--primary)] text-white shadow-sm">
-              <FiShield size={18} />
+            <div className="flex h-11 w-11 items-center justify-center rounded-lg bg-[var(--sidebar-bg)] shadow-sm overflow-hidden ring-1 ring-[var(--sidebar-border)]">
+              <img src="/logo.png" alt="RoadSafe360" className="h-full w-full object-contain p-1" />
             </div>
             <div>
               <p className="text-sm font-bold text-[var(--text)]">RoadSafe360</p>

@@ -12,9 +12,25 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: 'RoadSafe360 - Intelligent Driver Demerit & Road Safety Management System',
   description: 'Enterprise-grade road safety management platform for traffic authorities, police officers, and drivers.',
-  icons: { icon: '/icon.jpg', apple: '/icon.jpg' },
-  appleWebApp: { capable: true, title: 'RoadSafe360', statusBarStyle: 'default' },
-  other: { 'mobile-web-app-capable': 'yes' },
+  icons: {
+    icon: [
+      { url: '/favicon_io/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      { url: '/favicon_io/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/favicon_io/favicon.ico', sizes: '48x48' },
+    ],
+    apple: [
+      { url: '/favicon_io/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
+  appleWebApp: {
+    capable: true,
+    title: 'RoadSafe360',
+    statusBarStyle: 'default',
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+  },
+  manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

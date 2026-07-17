@@ -1,14 +1,14 @@
 'use client';
 
-import { FiShield } from 'react-icons/fi';
+
 
 export function SkeletonLoader() {
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center bg-[var(--bg)]">
       <div className="w-full max-w-md mx-auto px-6">
         <div className="flex flex-col items-center mb-12">
-          <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--primary)] text-white shadow-lg mb-4">
-            <FiShield size={26} />
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--bg-card)] shadow-lg mb-4 overflow-hidden ring-1 ring-[var(--border)]">
+            <img src="/logo.png" alt="RoadSafe360" className="h-full w-full object-contain p-2" />
           </div>
           <h1 className="text-xl font-bold text-[var(--text)]">RoadSafe360</h1>
           <p className="text-sm text-[var(--text-muted)] mt-1">Loading your experience...</p>

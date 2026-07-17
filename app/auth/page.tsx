@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { login } from '@/services/authService';
 import { useAuth } from '@/contexts/AuthContext';
 import { SkeletonLoader } from '@/components/SkeletonLoader';
-import { FiShield, FiMail, FiLock, FiEye, FiEyeOff, FiChevronRight } from 'react-icons/fi';
+import { FiMail, FiLock, FiEye, FiEyeOff, FiChevronRight } from 'react-icons/fi';
 import toast from 'react-hot-toast';
 
 export default function AuthPage() {
@@ -63,9 +63,9 @@ export default function AuthPage() {
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-[var(--bg)] px-4">
       <div className="mb-8 flex items-center gap-3 animate-fade-in">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--primary)] text-white shadow-lg">
-          <FiShield size={26} />
-        </div>
+          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[var(--bg-card)] shadow-lg overflow-hidden ring-1 ring-[var(--border)]">
+            <img src="/logo.png" alt="RoadSafe360" className="h-full w-full object-contain p-2" />
+          </div>
         <div>
           <h1 className="text-2xl font-bold text-[var(--text)]">RoadSafe360</h1>
           <p className="text-sm text-[var(--text-muted)]">Driver Demerit &amp; Road Safety Management</p>

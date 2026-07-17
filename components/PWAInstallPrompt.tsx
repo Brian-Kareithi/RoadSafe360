@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { FiShield, FiX } from 'react-icons/fi';
+import { FiX } from 'react-icons/fi';
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -46,8 +46,8 @@ export function PWAInstallPrompt() {
     <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-dropdown)]">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] text-white">
-            <FiShield size={20} />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[var(--bg-card)] overflow-hidden ring-1 ring-[var(--border)]">
+            <img src="/logo.png" alt="RoadSafe360" className="h-full w-full object-contain p-1.5" />
           </div>
           <div>
             <p className="text-sm font-bold text-[var(--text)]">Install RoadSafe360</p>
