@@ -43,18 +43,18 @@ export function PWAInstallPrompt() {
   if (isStandalone || !showPrompt) return null;
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm rounded-xl border border-zinc-200 bg-white p-4 shadow-lg dark:border-zinc-700 dark:bg-zinc-900">
+    <div className="fixed bottom-4 left-4 right-4 z-50 mx-auto max-w-sm rounded-2xl border border-[var(--border)] bg-[var(--bg-card)] p-4 shadow-[var(--shadow-dropdown)]">
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#BB2020] text-white">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-[var(--primary)] text-white">
             <FiShield size={20} />
           </div>
           <div>
-            <p className="text-sm font-semibold">Install RoadSafe360</p>
-            <p className="text-xs text-zinc-500">Add to your home screen for quick access</p>
+            <p className="text-sm font-bold text-[var(--text)]">Install RoadSafe360</p>
+            <p className="text-xs text-[var(--text-muted)]">Add to your home screen for quick access</p>
           </div>
         </div>
-        <button onClick={() => setShowPrompt(false)} className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-800">
+        <button onClick={() => setShowPrompt(false)} className="rounded-lg p-1 text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors">
           <FiX size={16} />
         </button>
       </div>

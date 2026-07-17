@@ -18,31 +18,31 @@ export function TopBar({ onMenuToggle, mobileMenuOpen }: TopBarProps) {
     : pathname.split('/').filter(Boolean).pop()?.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()) || 'Dashboard';
 
   return (
-    <header className="fixed top-0 right-0 left-0 z-30 flex h-14 items-center justify-between border-b border-zinc-200 bg-white/80 px-4 backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-950/80 lg:left-64">
+    <header className="fixed top-0 right-0 left-0 z-30 flex h-16 items-center justify-between border-b border-[var(--border)] bg-[var(--bg-card)]/80 px-4 backdrop-blur-md lg:left-[var(--sidebar-width)]">
       <div className="flex items-center gap-3">
         <button onClick={onMenuToggle}
-          className="rounded-lg p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 transition-colors lg:hidden">
+          className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors lg:hidden">
           {mobileMenuOpen ? <FiX size={20} /> : <FiMenu size={20} />}
         </button>
-        <h2 className="text-sm font-semibold capitalize text-zinc-900 dark:text-zinc-50 hidden sm:block">
+        <h2 className="text-base font-semibold text-[var(--text)] hidden sm:block">
           {pageName}
         </h2>
       </div>
       <div className="flex items-center gap-1">
-        <button className="relative rounded-lg p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 transition-colors">
+        <button className="relative rounded-lg p-2.5 text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors">
           <FiBell size={18} />
-          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-red-500 animate-pulse-dot ring-2 ring-white dark:ring-zinc-950" />
+          <span className="absolute right-2 top-2 h-2 w-2 rounded-full bg-[var(--danger)] animate-pulse-dot ring-2 ring-[var(--bg-card)]" />
         </button>
         <button onClick={toggle}
-          className="rounded-lg p-2 text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-800 transition-colors"
+          className="rounded-lg p-2.5 text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors"
           title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}>
           {theme === 'dark' ? <FiSun size={18} /> : <FiMoon size={18} />}
         </button>
-        <div className="ml-2 flex items-center gap-2.5 border-l border-zinc-200 pl-3 dark:border-zinc-700">
-          <div className="h-7 w-7 rounded-full bg-gradient-to-br from-zinc-300 to-zinc-400 dark:from-zinc-600 dark:to-zinc-700 flex items-center justify-center text-xs font-medium text-white shadow-sm">
+        <div className="ml-2 flex items-center gap-2.5 border-l border-[var(--border)] pl-3">
+          <div className="h-8 w-8 rounded-full bg-[var(--bg-muted)] flex items-center justify-center text-xs font-semibold text-[var(--text-muted)] shrink-0">
             {profile?.displayName?.charAt(0) || 'U'}
           </div>
-          <span className="text-sm font-medium text-zinc-700 dark:text-zinc-300 hidden sm:block">
+          <span className="text-sm font-medium text-[var(--text)] hidden sm:block">
             {profile?.displayName || 'User'}
           </span>
         </div>

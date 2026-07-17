@@ -1,12 +1,14 @@
 'use client';
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Select } from '@/components/ui/select';
 import { useCollection } from '@/hooks/useFirestore';
 import { formatCurrency } from '@/lib/format';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell } from 'recharts';
-import { FiTrendingUp, FiDollarSign, FiUsers, FiActivity } from 'react-icons/fi';
+import { FiTrendingUp, FiDollarSign, FiUsers, FiActivity, FiDownload, FiFilter } from 'react-icons/fi';
 
-const COLORS = ['#18181b', '#3b82f6', '#ef4444', '#f59e0b', '#22c55e', '#8b5cf6'];
+const COLORS = ['var(--primary)', 'var(--secondary)', 'var(--danger)', 'var(--warning)', 'var(--success)', 'var(--accent)'];
 
 export default function AnalyticsPage() {
   const { data: offences } = useCollection('offences');
@@ -35,75 +37,100 @@ export default function AnalyticsPage() {
 
   const avgPoints = offences.length > 0 ? (offences.reduce((s: number, o: any) => s + (o.pointsDeducted || 0), 0) / offences.length).toFixed(1) : '0';
 
+  const stats = [
+    { label: 'Total Offences', value: offences.length, icon: FiActivity, color: 'bg-[var(--primary)]' },
+    { label: 'Avg Points Deducted', value: avgPoints, icon: FiTrendingUp, color: 'bg-[var(--secondary)]' },
+    { label: 'Total Revenue', value: formatCurrency(offences.reduce((s: number, o: any) => s + (o.fineAmount || 0), 0)), icon: FiDollarSign, color: 'bg-[var(--success)]' },
+    { label: 'Total Drivers', value: drivers.length, icon: FiUsers, color: 'bg-[var(--accent)]' },
+  ];
+
   return (
-    <div className="space-y-6 py-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Analytics</h1>
-        <p className="text-zinc-500 text-sm">Data-driven insights and interactive charts</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Analytics</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">Data-driven insights and interactive charts</p>
+        </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" className="gap-2"><FiFilter size={14} /> Filter</Button>
+          <Button variant="outline" size="sm" className="gap-2"><FiDownload size={14} /> Export</Button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <Card><CardContent className="p-5 flex items-center gap-4"><div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center"><FiActivity className="text-zinc-600 dark:text-zinc-400" size={20} /></div><div><p className="text-sm text-zinc-500">Total Offences</p><p className="text-2xl font-bold tracking-tight">{offences.length}</p></div></CardContent></Card>
-        <Card><CardContent className="p-5 flex items-center gap-4"><div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center"><FiTrendingUp className="text-zinc-600 dark:text-zinc-400" size={20} /></div><div><p className="text-sm text-zinc-500">Avg Points Deducted</p><p className="text-2xl font-bold tracking-tight">{avgPoints}</p></div></CardContent></Card>
-        <Card><CardContent className="p-5 flex items-center gap-4"><div className="h-10 w-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/30 flex items-center justify-center"><FiDollarSign className="text-emerald-600 dark:text-emerald-400" size={20} /></div><div><p className="text-sm text-zinc-500">Total Revenue</p><p className="text-2xl font-bold tracking-tight">{formatCurrency(offences.reduce((s: number, o: any) => s + (o.fineAmount || 0), 0))}</p></div></CardContent></Card>
-        <Card><CardContent className="p-5 flex items-center gap-4"><div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center"><FiUsers className="text-blue-600 dark:text-blue-400" size={20} /></div><div><p className="text-sm text-zinc-500">Total Drivers</p><p className="text-2xl font-bold tracking-tight">{drivers.length}</p></div></CardContent></Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {stats.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label} className="animate-fade-in-up" style={{ animationDelay: `${i * 60}ms` }}>
+              <CardContent className="p-6 flex items-center gap-4">
+                <div className={`h-12 w-12 rounded-xl ${s.color} flex items-center justify-center shrink-0`}>
+                  <Icon className="text-white" size={22} />
+                </div>
+                <div>
+                  <p className="text-sm text-[var(--text-muted)]">{s.label}</p>
+                  <p className="text-2xl font-bold text-[var(--text)] tracking-tight animate-count-up" style={{ animationDelay: `${i * 60 + 100}ms` }}>{s.value}</p>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
+        <Card className="animate-fade-in-up stagger-1">
           <CardHeader><CardTitle className="text-base">Monthly Offence Trends</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <LineChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" strokeOpacity={0.5} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
-                <Line type="monotone" dataKey="offences" stroke="#18181b" strokeWidth={2} dot={{ r: 4, fill: '#18181b' }} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" strokeOpacity={0.5} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px', boxShadow: 'var(--shadow-card-hover)' }} />
+                <Line type="monotone" dataKey="offences" stroke="var(--primary)" strokeWidth={2.5} dot={{ r: 5, fill: 'var(--primary)', strokeWidth: 2, stroke: 'var(--bg-card)' }} />
               </LineChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in-up stagger-2">
           <CardHeader><CardTitle className="text-base">Revenue Trends</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" strokeOpacity={0.5} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} formatter={(v: any) => formatCurrency(Number(v))} />
-                <Bar dataKey="revenue" fill="#22c55e" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" strokeOpacity={0.5} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px', boxShadow: 'var(--shadow-card-hover)' }} formatter={(v: any) => formatCurrency(Number(v))} />
+                <Bar dataKey="revenue" fill="var(--success)" radius={[8, 8, 0, 0]} maxBarSize={36} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in-up stagger-3">
           <CardHeader><CardTitle className="text-base">Licence Status Distribution</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <PieChart>
-                <Pie data={statusData} cx="50%" cy="50%" outerRadius={90} paddingAngle={3} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
+                <Pie data={statusData} cx="50%" cy="50%" outerRadius={100} paddingAngle={3} dataKey="value" label={({ name, value }) => `${name}: ${value}`}>
                   {statusData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7' }} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px' }} />
               </PieChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="animate-fade-in-up stagger-3">
           <CardHeader><CardTitle className="text-base">Driver Risk Distribution</CardTitle></CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart data={riskDistribution} layout="vertical">
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" strokeOpacity={0.5} />
-                <XAxis type="number" tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <YAxis dataKey="name" type="category" tick={{ fontSize: 12 }} stroke="#a1a1aa" width={120} axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7' }} />
-                <Bar dataKey="value" fill="#ef4444" radius={[0, 6, 6, 0]} maxBarSize={24} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" strokeOpacity={0.5} />
+                <XAxis type="number" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis dataKey="name" type="category" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} width={120} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px' }} />
+                <Bar dataKey="value" fill="var(--danger)" radius={[0, 8, 8, 0]} maxBarSize={24} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>

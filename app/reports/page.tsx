@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select } from '@/components/ui/select';
-import { FiFileText, FiDownload, FiPrinter, FiCheck } from 'react-icons/fi';
+import { FiFileText, FiDownload, FiPrinter, FiCheck, FiBarChart2 } from 'react-icons/fi';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
 import { jsPDF } from 'jspdf';
@@ -11,24 +11,24 @@ import { useCollection } from '@/hooks/useFirestore';
 import { formatCurrency, formatDate } from '@/lib/format';
 
 const reportTypes = [
-  { id: 'daily', label: 'Daily Report' },
-  { id: 'weekly', label: 'Weekly Report' },
-  { id: 'monthly', label: 'Monthly Report' },
-  { id: 'annual', label: 'Annual Report' },
-  { id: 'regional', label: 'Regional Report' },
-  { id: 'driver-history', label: 'Driver History Report' },
-  { id: 'officer-activity', label: 'Officer Activity Report' },
-  { id: 'revenue', label: 'Revenue Report' },
-  { id: 'suspension', label: 'Suspension Statistics' },
-  { id: 'high-risk', label: 'High-Risk Drivers' },
-  { id: 'repeat-offenders', label: 'Repeat Offenders' },
+  { id: 'daily', label: 'Daily Report', icon: FiFileText },
+  { id: 'weekly', label: 'Weekly Report', icon: FiFileText },
+  { id: 'monthly', label: 'Monthly Report', icon: FiFileText },
+  { id: 'annual', label: 'Annual Report', icon: FiFileText },
+  { id: 'regional', label: 'Regional Report', icon: FiBarChart2 },
+  { id: 'driver-history', label: 'Driver History Report', icon: FiBarChart2 },
+  { id: 'officer-activity', label: 'Officer Activity Report', icon: FiBarChart2 },
+  { id: 'revenue', label: 'Revenue Report', icon: FiFileText },
+  { id: 'suspension', label: 'Suspension Statistics', icon: FiBarChart2 },
+  { id: 'high-risk', label: 'High-Risk Drivers', icon: FiBarChart2 },
+  { id: 'repeat-offenders', label: 'Repeat Offenders', icon: FiBarChart2 },
 ];
 
 function generatePDF(title: string, content: string[][], footer?: string) {
   const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pageWidth = pdf.internal.pageSize.getWidth();
 
-  pdf.setFillColor(187, 32, 32);
+  pdf.setFillColor(30, 64, 175);
   pdf.rect(0, 0, pageWidth, 30, 'F');
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(14);
@@ -46,7 +46,7 @@ function generatePDF(title: string, content: string[][], footer?: string) {
 
   let y = 60;
   pdf.setFontSize(9);
-  pdf.setFillColor(240, 240, 240);
+  pdf.setFillColor(241, 245, 249);
   pdf.setTextColor(30, 30, 30);
 
   for (const row of content) {
@@ -74,7 +74,6 @@ export default function ReportsPage() {
   const { data: drivers } = useCollection('drivers');
   const { data: offences } = useCollection('offences');
   const { data: officers } = useCollection('policeOfficers');
-  const { data: appeals } = useCollection('appeals');
 
   const getReportData = () => {
     const report = reportTypes.find(r => r.id === selectedReport);
@@ -163,29 +162,33 @@ export default function ReportsPage() {
   };
 
   return (
-    <div className="space-y-6 py-6 animate-fade-in">
+    <div className="space-y-6 animate-fade-in">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Reports</h1>
-        <p className="text-zinc-500 text-sm">Generate and export professional reports</p>
+        <h1 className="text-2xl font-bold text-[var(--text)]">Reports</h1>
+        <p className="text-[var(--text-muted)] text-sm mt-1">Generate and export professional reports</p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {reportTypes.map((r, i) => (
-          <Card key={r.id}
-            className={`cursor-pointer transition-all duration-200 hover:shadow-md animate-fade-in-up ${selectedReport === r.id ? 'ring-2 ring-[#BB2020] dark:ring-[#FF4444] border-[#BB2020]/20 dark:border-[#FF4444]/20' : ''}`}
-            style={{ animationDelay: `${i * 30}ms` }}
-            onClick={() => setSelectedReport(r.id)}>
-            <CardContent className="p-5 flex items-center gap-3">
-              <div className={`h-10 w-10 rounded-lg flex items-center justify-center transition-colors ${selectedReport === r.id ? 'bg-[#BB2020]/10 text-[#BB2020] dark:bg-[#FF4444]/20 dark:text-[#FF4444]' : 'bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400'}`}>
-                {selectedReport === r.id ? <FiCheck size={20} /> : <FiFileText size={20} />}
-              </div>
-              <div>
-                <p className="font-medium text-sm text-zinc-800 dark:text-zinc-200">{r.label}</p>
-                <p className="text-xs text-zinc-400">PDF, Excel, CSV</p>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        {reportTypes.map((r, i) => {
+          const Icon = r.icon;
+          const isSelected = selectedReport === r.id;
+          return (
+            <Card key={r.id}
+              className={`cursor-pointer transition-all duration-200 animate-fade-in-up ${isSelected ? 'ring-2 ring-[var(--primary)] border-[var(--primary)]/30' : 'hover:shadow-[var(--shadow-card-hover)]'}`}
+              style={{ animationDelay: `${i * 30}ms` }}
+              onClick={() => setSelectedReport(r.id)}>
+              <CardContent className="p-5 flex items-center gap-3.5">
+                <div className={`h-11 w-11 rounded-xl flex items-center justify-center transition-all duration-200 ${isSelected ? 'bg-[var(--primary)] text-white' : 'bg-[var(--bg-muted)] text-[var(--text-muted)]'}`}>
+                  {isSelected ? <FiCheck size={20} /> : <Icon size={20} />}
+                </div>
+                <div>
+                  <p className="font-semibold text-sm text-[var(--text)]">{r.label}</p>
+                  <p className="text-xs text-[var(--text-light)]">PDF, CSV</p>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
       <Card>
@@ -197,7 +200,7 @@ export default function ReportsPage() {
             {reportTypes.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
           </Select>
           <div className="flex gap-2">
-            <Button className="gap-2 shadow-sm" onClick={handleExportPDF}><FiDownload size={16} /> PDF</Button>
+            <Button className="gap-2" onClick={handleExportPDF}><FiDownload size={16} /> PDF</Button>
             <Button variant="outline" className="gap-2" onClick={handleExportCSV}><FiDownload size={16} /> CSV</Button>
             <Button variant="ghost" className="gap-2" onClick={() => window.print()}><FiPrinter size={16} /></Button>
           </div>

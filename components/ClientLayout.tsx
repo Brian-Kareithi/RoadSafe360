@@ -24,7 +24,14 @@ export function ClientLayout({ children }: { children: React.ReactNode }) {
         <PWAInstallPrompt />
         <Toaster position="top-right" toastOptions={{
           duration: 4000,
-          style: { borderRadius: '10px', background: '#18181b', color: '#f4f4f5', fontSize: '14px' },
+          style: {
+            borderRadius: '12px',
+            background: 'var(--bg-card)',
+            color: 'var(--text)',
+            fontSize: '14px',
+            border: '1px solid var(--border)',
+            boxShadow: 'var(--shadow-dropdown)',
+          },
         }} />
       </AuthProvider>
     </ThemeProvider>

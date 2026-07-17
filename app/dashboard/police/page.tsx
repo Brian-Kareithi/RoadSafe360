@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useCollection } from '@/hooks/useFirestore';
 import { formatDateTime } from '@/lib/format';
-import { FiSearch, FiAlertTriangle, FiUser, FiMapPin, FiClock, FiArrowRight } from 'react-icons/fi';
+import { FiSearch, FiAlertTriangle, FiUser, FiMapPin, FiClock, FiArrowRight, FiPlus } from 'react-icons/fi';
 import Link from 'next/link';
 import { useState } from 'react';
 
@@ -22,98 +22,72 @@ export default function PoliceDashboard() {
 
   const recentOffences = [...offences].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 6);
 
+  const stats = [
+    { label: "Today's Cases", value: todayCases, icon: FiClock, color: 'bg-blue-500' },
+    { label: 'Issued Today', value: issuedToday, icon: FiAlertTriangle, color: 'bg-amber-500' },
+    { label: 'Pending Appeals', value: pendingAppeals, icon: FiUser, color: 'bg-purple-500' },
+    { label: 'Total Offences', value: offences.length, icon: FiMapPin, color: 'bg-slate-500' },
+  ];
+
   return (
-    <div className="space-y-6 py-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Police Dashboard</h1>
-          <p className="text-zinc-500 dark:text-zinc-400 text-sm">Traffic Enforcement Portal</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Police Dashboard</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">Traffic Enforcement Portal</p>
         </div>
         <Link href="/offences/new">
-          <Button className="gap-2 shadow-sm"><FiAlertTriangle size={16} /> Issue Offence</Button>
+          <Button className="gap-2"><FiPlus size={16} /> Issue Offence</Button>
         </Link>
       </div>
 
       <div className="relative max-w-md">
-        <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-        <Input placeholder="Search driver by name, licence, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="pl-10 h-10" />
+        <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-light)]" size={16} />
+        <Input placeholder="Search driver by name, licence, or ID..." value={search} onChange={e => setSearch(e.target.value)} className="pl-11" />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-500">Today&apos;s Cases</p>
-                <p className="text-2xl font-bold mt-1 text-blue-600">{todayCases}</p>
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-blue-50 dark:bg-blue-950/30 flex items-center justify-center">
-                <FiClock className="h-5 w-5 text-blue-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-500">Issued Today</p>
-                <p className="text-2xl font-bold mt-1 text-orange-600">{issuedToday}</p>
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-orange-50 dark:bg-orange-950/30 flex items-center justify-center">
-                <FiAlertTriangle className="h-5 w-5 text-orange-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-500">Pending Appeals</p>
-                <p className="text-2xl font-bold mt-1 text-purple-600">{pendingAppeals}</p>
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-purple-50 dark:bg-purple-950/30 flex items-center justify-center">
-                <FiUser className="h-5 w-5 text-purple-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-zinc-500">Total Offences</p>
-                <p className="text-2xl font-bold mt-1">{offences.length}</p>
-              </div>
-              <div className="h-10 w-10 rounded-xl bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center">
-                <FiMapPin className="h-5 w-5 text-zinc-500" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+        {stats.map((s, i) => {
+          const Icon = s.icon;
+          return (
+            <Card key={s.label} className="animate-fade-in-up" style={{ animationDelay: `${i * 60}ms` }}>
+              <div className={`h-1 ${s.color}`} />
+              <CardContent className="p-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-[var(--text-muted)]">{s.label}</p>
+                    <p className="text-3xl font-bold mt-1.5 text-[var(--text)] animate-count-up" style={{ animationDelay: `${i * 60 + 100}ms` }}>{s.value}</p>
+                  </div>
+                  <div className={`h-12 w-12 rounded-xl ${s.color} flex items-center justify-center`}>
+                    <Icon className="text-white" size={22} />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
 
-      <Card>
+      <Card className="animate-fade-in-up stagger-1">
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="text-base">Recent Offences</CardTitle>
-          <Link href="/offences" className="text-sm text-blue-600 hover:underline flex items-center gap-1 font-medium">View All <FiArrowRight size={14} /></Link>
+          <Link href="/offences" className="text-sm text-[var(--primary)] hover:underline flex items-center gap-1 font-semibold">View All <FiArrowRight size={14} /></Link>
         </CardHeader>
         <CardContent>
           <div className="space-y-1">
             {recentOffences.map((o: any, i: number) => (
-              <div key={o.id} className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
+              <div key={o.id} className="flex items-center justify-between py-3.5 border-b border-[var(--border-light)] last:border-0 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
                 <div>
-                  <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Offence {o.id?.slice(0, 8)}...</p>
-                  <p className="text-xs text-zinc-500">{o.notes || 'Traffic violation'} &middot; {o.pointsDeducted} pts</p>
+                  <p className="text-sm font-semibold text-[var(--text)]">Offence {o.id?.slice(0, 8)}...</p>
+                  <p className="text-xs text-[var(--text-muted)] mt-0.5">{o.notes || 'Traffic violation'} &middot; {o.pointsDeducted} pts</p>
                 </div>
                 <div className="text-right flex items-center gap-3">
-                  <span className="text-xs text-zinc-400">{formatDateTime(o.timestamp)}</span>
+                  <span className="text-xs text-[var(--text-light)]">{formatDateTime(o.timestamp)}</span>
                   <Badge variant={o.status === 'issued' ? 'warning' : o.status === 'paid' ? 'success' : 'default'}>{o.status}</Badge>
                 </div>
               </div>
             ))}
-            {recentOffences.length === 0 && <p className="text-sm text-zinc-400 py-4 text-center">No offences recorded yet</p>}
+            {recentOffences.length === 0 && <p className="text-sm text-[var(--text-muted)] py-6 text-center">No offences recorded yet</p>}
           </div>
         </CardContent>
       </Card>

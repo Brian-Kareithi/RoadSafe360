@@ -1,6 +1,6 @@
 'use client';
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -30,37 +30,49 @@ export default function AppealsPage() {
     } catch (err: any) { toast.error(err.message); }
   };
 
+  const getStatusBadgeVariant = (status: string) => {
+    const map: Record<string, 'success' | 'warning' | 'destructive' | 'default'> = {
+      approved: 'success',
+      rejected: 'destructive',
+      under_review: 'warning',
+    };
+    return map[status] || 'default';
+  };
+
   return (
-    <div className="space-y-6 py-6 animate-fade-in">
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Appeals</h1>
-          <p className="text-zinc-500 text-sm">{appeals.length} total appeals</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Appeals</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">{appeals.length} total appeals</p>
         </div>
-        <Button onClick={() => setShowForm(!showForm)} className="gap-2 shadow-sm">
+        <Button onClick={() => setShowForm(!showForm)} className="gap-2">
           {showForm ? <><FiX size={16} /> Close</> : <><FiPlus size={16} /> New Appeal</>}
         </Button>
       </div>
 
       {showForm && (
-        <Card className="animate-scale-in border-zinc-200/80 dark:border-zinc-700/80">
-          <CardHeader><CardTitle className="text-base">Submit Appeal</CardTitle></CardHeader>
-          <CardContent className="space-y-4">
+        <Card className="animate-scale-in">
+          <CardHeader>
+            <CardTitle className="text-base">Submit Appeal</CardTitle>
+            <CardDescription>Fill in the details to submit a new appeal</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-5">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Select Offence</label>
+              <label className="text-sm font-semibold mb-2 block text-[var(--text)]">Select Offence</label>
               <select value={offenceId} onChange={e => setOffenceId(e.target.value)}
-                className="flex h-10 w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900/20 focus-visible:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100">
+                className="flex h-12 w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2 text-sm shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/20 focus-visible:border-[var(--primary)]/50 dark:bg-[var(--bg-card)] dark:text-[var(--text)]">
                 <option value="">Choose offence...</option>
                 {offences.map((o: any) => <option key={o.id} value={o.id}>{o.notes || 'Offence'} - {o.pointsDeducted}pts</option>)}
               </select>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Reason</label>
+              <label className="text-sm font-semibold mb-2 block text-[var(--text)]">Reason</label>
               <textarea value={reason} onChange={e => setReason(e.target.value)} rows={4}
-                className="flex w-full rounded-lg border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-zinc-900/20 focus-visible:border-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+                className="flex w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-sm shadow-sm transition-all duration-200 placeholder:text-[var(--text-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/20 focus-visible:border-[var(--primary)]/50"
                 placeholder="Explain why you are appealing..." />
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-3">
               <Button onClick={handleSubmit}>Submit Appeal</Button>
               <Button variant="outline" onClick={() => setShowForm(false)}>Cancel</Button>
             </div>
@@ -83,16 +95,16 @@ export default function AppealsPage() {
             <TableBody>
               {sorted.map((a: any, i: number) => (
                 <TableRow key={a.id} className="animate-fade-in-up" style={{ animationDelay: `${i * 30}ms` }}>
-                  <TableCell className="font-medium font-mono text-zinc-800 dark:text-zinc-200">{a.offenceRecordId?.slice(0, 8)}...</TableCell>
-                  <TableCell className="text-sm text-zinc-500 max-w-xs truncate">{a.reason}</TableCell>
+                  <TableCell className="font-semibold font-mono text-[var(--text)]">{a.offenceRecordId?.slice(0, 8)}...</TableCell>
+                  <TableCell className="text-sm text-[var(--text-muted)] max-w-xs truncate">{a.reason}</TableCell>
                   <TableCell>
-                    <Badge variant={a.status === 'approved' ? 'success' : a.status === 'rejected' ? 'destructive' : a.status === 'under_review' ? 'warning' : 'default'}>{a.status}</Badge>
+                    <Badge variant={getStatusBadgeVariant(a.status)}>{a.status}</Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-zinc-500">{formatDateTime(a.submissionDate)}</TableCell>
-                  <TableCell className="text-sm text-zinc-500">{a.resolution || '-'}</TableCell>
+                  <TableCell className="text-sm text-[var(--text-muted)]">{formatDateTime(a.submissionDate)}</TableCell>
+                  <TableCell className="text-sm text-[var(--text-muted)]">{a.resolution || '-'}</TableCell>
                 </TableRow>
               ))}
-              {sorted.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-zinc-400 py-10">No appeals found</TableCell></TableRow>}
+              {sorted.length === 0 && <TableRow><TableCell colSpan={5} className="text-center text-[var(--text-muted)] py-12">No appeals found</TableCell></TableRow>}
             </TableBody>
           </Table>
         </CardContent>

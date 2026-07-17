@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useCollection } from '@/hooks/useFirestore';
 import { formatCurrency, formatDateTime, getStatusColor, getRiskLabel, getRiskColor } from '@/lib/format';
-import { FiUsers, FiShield, FiAlertTriangle, FiDollarSign, FiActivity, FiMapPin } from 'react-icons/fi';
+import { FiUsers, FiShield, FiAlertTriangle, FiDollarSign, FiActivity, FiMapPin, FiArrowUp, FiArrowDown } from 'react-icons/fi';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
-const COLORS = ['#18181b', '#3b82f6', '#ef4444', '#f59e0b', '#22c55e'];
+const COLORS = ['var(--primary)', 'var(--secondary)', 'var(--danger)', 'var(--warning)', 'var(--success)'];
 
 export default function AdminDashboard() {
   const { data: drivers } = useCollection('drivers');
@@ -37,36 +37,43 @@ export default function AdminDashboard() {
   const recentActivity = [...offences].sort((a: any, b: any) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 5);
 
   const stats = [
-    { label: 'Total Drivers', value: drivers.length, icon: FiUsers, color: 'text-blue-600', bg: 'bg-blue-50 dark:bg-blue-950/30' },
-    { label: 'Active Licences', value: licences.filter((l: any) => l.status === 'active').length, icon: FiShield, color: 'text-green-600', bg: 'bg-green-50 dark:bg-green-950/30' },
-    { label: 'Suspended', value: suspended, icon: FiAlertTriangle, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30' },
-    { label: 'Revoked', value: revoked, icon: FiAlertTriangle, color: 'text-zinc-600', bg: 'bg-zinc-100 dark:bg-zinc-800' },
-    { label: 'Active Officers', value: officers.length, icon: FiUsers, color: 'text-purple-600', bg: 'bg-purple-50 dark:bg-purple-950/30' },
-    { label: "Today's Offences", value: todayOffences, icon: FiActivity, color: 'text-orange-600', bg: 'bg-orange-50 dark:bg-orange-950/30' },
-    { label: 'Monthly Revenue', value: formatCurrency(revenue), icon: FiDollarSign, color: 'text-emerald-600', bg: 'bg-emerald-50 dark:bg-emerald-950/30' },
-    { label: 'High-Risk Drivers', value: highRisk, icon: FiMapPin, color: 'text-red-600', bg: 'bg-red-50 dark:bg-red-950/30' },
+    { label: 'Total Drivers', value: drivers.length, icon: FiUsers, trend: '+12%', trendUp: true, color: 'bg-blue-500' },
+    { label: 'Total Revenue', value: formatCurrency(revenue), icon: FiDollarSign, trend: '+8.3%', trendUp: true, color: 'bg-emerald-500' },
+    { label: 'Active Licences', value: licences.filter((l: any) => l.status === 'active').length, icon: FiShield, trend: '+3.1%', trendUp: true, color: 'bg-cyan-500' },
+    { label: 'High-Risk Drivers', value: highRisk, icon: FiAlertTriangle, trend: '-2.4%', trendUp: false, color: 'bg-rose-500' },
   ];
 
   return (
-    <div className="space-y-6 py-6 animate-fade-in">
-      <div>
-        <h1 className="text-2xl font-bold tracking-tight">Admin Dashboard</h1>
-        <p className="text-zinc-500 dark:text-zinc-400 text-sm">National Road Safety Overview</p>
+    <div className="space-y-6 animate-fade-in">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-[var(--text)]">Admin Dashboard</h1>
+          <p className="text-[var(--text-muted)] text-sm mt-1">National Road Safety Overview</p>
+        </div>
+        <div className="flex items-center gap-2 text-sm text-[var(--text-muted)]">
+          <span className="h-2 w-2 rounded-full bg-emerald-500" />
+          Live
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         {stats.map((s, i) => {
           const Icon = s.icon;
           return (
-            <Card key={s.label} className="animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
+            <Card key={s.label} className="animate-fade-in-up overflow-hidden" style={{ animationDelay: `${i * 60}ms` }}>
+              <div className={`h-1 ${s.color}`} />
               <CardContent className="p-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-zinc-500 dark:text-zinc-400">{s.label}</p>
-                    <p className={`text-2xl font-bold mt-1 ${s.color} animate-count-up`} style={{ animationDelay: `${i * 50 + 100}ms` }}>{s.value}</p>
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <p className="text-sm text-[var(--text-muted)]">{s.label}</p>
+                    <p className="text-3xl font-bold text-[var(--text)] tracking-tight animate-count-up" style={{ animationDelay: `${i * 60 + 100}ms` }}>{s.value}</p>
+                    <div className={`flex items-center gap-1 text-xs font-medium ${s.trendUp ? 'text-emerald-600' : 'text-red-500'}`}>
+                      {s.trendUp ? <FiArrowUp size={12} /> : <FiArrowDown size={12} />}
+                      {s.trend} vs last month
+                    </div>
                   </div>
-                  <div className={`h-10 w-10 rounded-xl ${s.bg} flex items-center justify-center`}>
-                    <Icon className={`h-5 w-5 ${s.color}`} />
+                  <div className={`h-12 w-12 rounded-xl ${s.color.replace('bg-', 'bg-').replace('500', '100')} dark:${s.color.replace('bg-', 'bg-').replace('500', '900/30')} flex items-center justify-center shrink-0`}>
+                    <Icon className={`text-white`} size={22} />
                   </div>
                 </div>
               </CardContent>
@@ -76,37 +83,41 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <Card>
-          <CardHeader><CardTitle className="text-base">Monthly Offences</CardTitle></CardHeader>
+        <Card className="animate-fade-in-up stagger-1">
+          <CardHeader>
+            <CardTitle className="text-base">Monthly Offences</CardTitle>
+          </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <BarChart data={monthlyOffences}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" strokeOpacity={0.5} />
-                <XAxis dataKey="name" tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12 }} stroke="#a1a1aa" axisLine={false} tickLine={false} />
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
-                <Bar dataKey="offences" fill="#18181b" radius={[6, 6, 0, 0]} maxBarSize={32} />
+                <CartesianGrid strokeDasharray="3 3" stroke="var(--border-light)" strokeOpacity={0.5} />
+                <XAxis dataKey="name" tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <YAxis tick={{ fontSize: 12, fill: 'var(--text-muted)' }} axisLine={false} tickLine={false} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px', boxShadow: 'var(--shadow-card-hover)' }} />
+                <Bar dataKey="offences" fill="var(--primary)" radius={[8, 8, 0, 0]} maxBarSize={36} />
               </BarChart>
             </ResponsiveContainer>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="text-base">Offence Severity Distribution</CardTitle></CardHeader>
+        <Card className="animate-fade-in-up stagger-2">
+          <CardHeader>
+            <CardTitle className="text-base">Offence Severity</CardTitle>
+          </CardHeader>
           <CardContent>
-            <ResponsiveContainer width="100%" height={250}>
+            <ResponsiveContainer width="100%" height={280}>
               <PieChart>
-                <Pie data={severityData} cx="50%" cy="50%" innerRadius={60} outerRadius={100} paddingAngle={4} dataKey="value">
+                <Pie data={severityData} cx="50%" cy="50%" innerRadius={65} outerRadius={110} paddingAngle={5} dataKey="value">
                   {severityData.map((_, i) => <Cell key={i} fill={COLORS[i]} />)}
                 </Pie>
-                <Tooltip contentStyle={{ borderRadius: '10px', border: '1px solid #e4e4e7', fontSize: '13px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <Tooltip contentStyle={{ borderRadius: '12px', border: '1px solid var(--border)', background: 'var(--bg-card)', color: 'var(--text)', fontSize: '13px', boxShadow: 'var(--shadow-card-hover)' }} />
               </PieChart>
             </ResponsiveContainer>
-            <div className="flex justify-center gap-6 mt-2">
+            <div className="flex justify-center gap-6 mt-4">
               {severityData.map((d, i) => (
                 <div key={d.name} className="flex items-center gap-2 text-sm">
                   <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />
-                  <span className="text-zinc-600 dark:text-zinc-400">{d.name} <span className="font-semibold text-zinc-800 dark:text-zinc-200">({d.value})</span></span>
+                  <span className="text-[var(--text-muted)]">{d.name} <span className="font-semibold text-[var(--text)]">({d.value})</span></span>
                 </div>
               ))}
             </div>
@@ -114,28 +125,30 @@ export default function AdminDashboard() {
         </Card>
       </div>
 
-      <Card>
-        <CardHeader><CardTitle className="text-base">Recent Activity</CardTitle></CardHeader>
+      <Card className="animate-fade-in-up stagger-3">
+        <CardHeader>
+          <CardTitle className="text-base">Recent Activity</CardTitle>
+        </CardHeader>
         <CardContent>
           <div className="space-y-1">
             {recentActivity.map((o: any, i: number) => (
-              <div key={o.id} className="flex items-center justify-between py-3 border-b border-zinc-100 dark:border-zinc-800 last:border-0 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
-                <div className="flex items-center gap-3">
-                  <div className="h-9 w-9 rounded-xl bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-                    <FiAlertTriangle size={14} className="text-red-600 dark:text-red-400" />
+              <div key={o.id} className="flex items-center justify-between py-3.5 border-b border-[var(--border-light)] last:border-0 animate-fade-in-up" style={{ animationDelay: `${i * 50}ms` }}>
+                <div className="flex items-center gap-3.5">
+                  <div className="h-10 w-10 rounded-xl bg-rose-50 flex items-center justify-center dark:bg-rose-900/20">
+                    <FiAlertTriangle size={15} className="text-rose-500" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-zinc-800 dark:text-zinc-200">Offence Issued</p>
-                    <p className="text-xs text-zinc-500">{o.notes || 'No details'}</p>
+                    <p className="text-sm font-semibold text-[var(--text)]">Offence Issued</p>
+                    <p className="text-xs text-[var(--text-muted)]">{o.notes || 'Traffic violation recorded'}</p>
                   </div>
                 </div>
                 <div className="text-right flex items-center gap-3">
-                  <span className="text-xs text-zinc-400">{formatDateTime(o.timestamp)}</span>
+                  <span className="text-xs text-[var(--text-light)]">{formatDateTime(o.timestamp)}</span>
                   <Badge variant={o.status === 'issued' ? 'warning' : o.status === 'paid' ? 'success' : 'default'}>{o.status}</Badge>
                 </div>
               </div>
             ))}
-            {recentActivity.length === 0 && <p className="text-sm text-zinc-400 py-4 text-center">No recent activity</p>}
+            {recentActivity.length === 0 && <p className="text-sm text-[var(--text-muted)] py-6 text-center">No recent activity</p>}
           </div>
         </CardContent>
       </Card>

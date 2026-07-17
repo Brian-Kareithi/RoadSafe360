@@ -3,9 +3,8 @@ import { cn } from '@/lib/utils';
 
 const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
   <div ref={ref} className={cn(
-    'rounded-xl border border-zinc-200 bg-white text-zinc-950 shadow-sm transition-all duration-200',
-    'dark:border-zinc-800 dark:bg-zinc-950 dark:text-zinc-50',
-    'hover:shadow-md',
+    'rounded-xl border border-[var(--border)] bg-[var(--bg-card)] text-[var(--text)] shadow-[var(--shadow-card)] transition-all duration-200',
+    'hover:shadow-[var(--shadow-card-hover)]',
     className
   )} {...props} />
 ));
@@ -17,12 +16,12 @@ const CardHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDiv
 CardHeader.displayName = 'CardHeader';
 
 const CardTitle = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('font-semibold leading-none tracking-tight text-[15px]', className)} {...props} />
+  <div ref={ref} className={cn('font-bold leading-tight tracking-tight text-lg', className)} {...props} />
 ));
 CardTitle.displayName = 'CardTitle';
 
 const CardDescription = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn('text-sm text-zinc-500 dark:text-zinc-400', className)} {...props} />
+  <div ref={ref} className={cn('text-sm text-[var(--text-muted)]', className)} {...props} />
 ));
 CardDescription.displayName = 'CardDescription';
 

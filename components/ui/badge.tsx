@@ -2,16 +2,17 @@ import * as React from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
-const badgeVariants = cva('inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-zinc-400 focus:ring-offset-2', {
+const badgeVariants = cva('inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:ring-offset-2', {
   variants: {
     variant: {
-      default: 'border-transparent bg-zinc-900 text-zinc-50 shadow dark:bg-zinc-50 dark:text-zinc-900',
-      secondary: 'border-transparent bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-50',
-      destructive: 'border-transparent bg-red-600 text-zinc-50 shadow dark:bg-red-700',
-      outline: 'text-zinc-950 dark:text-zinc-50',
-      success: 'border-transparent bg-[#006600] text-white dark:bg-[#008B45] dark:text-white',
-      warning: 'border-transparent bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-100',
-      kenyan: 'border-transparent bg-[#BB2020] text-white shadow dark:bg-[#CC3333]',
+      default: 'border-transparent bg-[var(--bg-muted)] text-[var(--text-muted)]',
+      primary: 'border-transparent bg-[var(--primary)] text-white',
+      secondary: 'border-transparent bg-[var(--secondary)] text-white',
+      destructive: 'border-transparent bg-[var(--danger)] text-white',
+      outline: 'border-[var(--border)] text-[var(--text-muted)]',
+      success: 'border-transparent bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400',
+      warning: 'border-transparent bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      info: 'border-transparent bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
     },
   },
   defaultVariants: { variant: 'default' },

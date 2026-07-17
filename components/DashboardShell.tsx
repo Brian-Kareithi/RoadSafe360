@@ -11,12 +11,12 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthGuard>
-      <div className="flex min-h-screen bg-zinc-50 dark:bg-zinc-950">
-        <FirstTimeTutorial />
+      <FirstTimeTutorial />
+      <div className="flex min-h-screen bg-[var(--bg)]">
         <Sidebar open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} />
-        <div className="flex flex-1 flex-col lg:ml-64 border-l border-zinc-200 dark:border-zinc-800">
+        <div className="flex flex-1 flex-col lg:ml-[var(--sidebar-width)]">
           <TopBar onMenuToggle={() => setMobileMenuOpen(!mobileMenuOpen)} mobileMenuOpen={mobileMenuOpen} />
-          <main className="flex-1 px-4 pb-8 pt-20 sm:px-6 lg:px-8 w-full max-w-7xl mx-auto">
+          <main className="flex-1 px-4 sm:px-6 lg:px-8 pb-10 pt-24 w-full" style={{ maxWidth: '1400px', marginLeft: 'auto', marginRight: 'auto' }}>
             {children}
           </main>
         </div>

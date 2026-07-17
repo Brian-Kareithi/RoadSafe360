@@ -61,59 +61,57 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-zinc-50 via-white to-zinc-100 dark:from-zinc-950 dark:via-zinc-900 dark:to-zinc-950 px-4 overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-red-100/30 via-transparent to-transparent dark:from-red-950/10 pointer-events-none" />
-
-      <div className="relative mb-8 flex items-center gap-3 animate-fade-in">
-        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#BB2020] to-[#8B0000] text-white shadow-lg shadow-red-900/20">
+    <div className="relative min-h-screen flex flex-col items-center justify-center bg-[var(--bg)] px-4">
+      <div className="mb-8 flex items-center gap-3 animate-fade-in">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--primary)] text-white shadow-lg">
           <FiShield size={26} />
         </div>
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">RoadSafe360</h1>
-          <p className="text-sm text-zinc-500 dark:text-zinc-400">Driver Demerit &amp; Road Safety Management</p>
+          <h1 className="text-2xl font-bold text-[var(--text)]">RoadSafe360</h1>
+          <p className="text-sm text-[var(--text-muted)]">Driver Demerit &amp; Road Safety Management</p>
         </div>
       </div>
 
-      <Card className="relative w-full max-w-md animate-fade-in-up shadow-xl border-zinc-200/80 dark:border-zinc-700/80">
-        <CardHeader className="pb-4">
-          <CardTitle className="text-lg">Sign In</CardTitle>
+      <Card className="relative w-full max-w-md animate-fade-in-up shadow-[var(--shadow-card-hover)]">
+        <CardHeader className="pb-5">
+          <CardTitle className="text-xl">Sign In</CardTitle>
           <CardDescription>Enter your credentials to access the system</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleLogin} className="space-y-4">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Email</label>
+              <label className="text-sm font-semibold mb-2 block text-[var(--text)]">Email</label>
               <div className="relative">
-                <FiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className="pl-10 h-10" required />
+                <FiMail className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-light)]" size={16} />
+                <Input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="you@example.com" className="pl-11" required />
               </div>
             </div>
             <div>
-              <label className="text-sm font-medium mb-1.5 block">Password</label>
+              <label className="text-sm font-semibold mb-2 block text-[var(--text)]">Password</label>
               <div className="relative">
-                <FiLock className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400" size={16} />
-                <Input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="••••••••" className="pl-10 pr-10 h-10" required />
-                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600 transition-colors">
+                <FiLock className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-light)]" size={16} />
+                <Input type={showPw ? 'text' : 'password'} value={password} onChange={e => setPassword(e.target.value)} placeholder="Enter your password" className="pl-11 pr-11" required />
+                <button type="button" onClick={() => setShowPw(!showPw)} className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[var(--text-light)] hover:text-[var(--text-muted)] transition-colors">
                   {showPw ? <FiEyeOff size={16} /> : <FiEye size={16} />}
                 </button>
               </div>
             </div>
-            <Button type="submit" variant="kenyan" className="w-full gap-2 h-10" disabled={submitting}>
+            <Button type="submit" variant="default" className="w-full gap-2 h-12 text-base" disabled={submitting}>
               {submitting ? 'Signing in...' : 'Sign In'}
               {!submitting && <FiChevronRight size={16} />}
             </Button>
           </form>
 
           <div className="mt-8">
-            <div className="relative mb-4">
+            <div className="relative mb-5">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-zinc-200 dark:border-zinc-700" />
+                <div className="w-full border-t border-[var(--border)]" />
               </div>
               <div className="relative flex justify-center text-xs">
-                <span className="bg-white px-2 text-zinc-400 dark:bg-zinc-950">Quick Login</span>
+                <span className="bg-[var(--bg-card)] px-3 text-[var(--text-muted)]">Quick Login</span>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {[
                 { label: 'Admin', email: 'aisha@roadsafe360.go.ke', password: 'Admin123!', role: 'admin', name: 'Aisha Abubakar' },
                 { label: 'Police', email: 'mohammed@roadsafe360.go.ke', password: 'Officer123!', role: 'police', name: 'Mohammed Karshe' },
@@ -121,9 +119,9 @@ export default function AuthPage() {
                 { label: 'Authority', email: 'khalid@roadsafe360.go.ke', password: 'Auth123!', role: 'authority', name: 'Khalid Salad' },
               ].map((item) => (
                 <button key={item.email} onClick={() => quickLogin(item)}
-                  className="group px-3 py-2.5 text-xs font-medium rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-900 hover:border-[#BB2020]/30 hover:bg-red-50/50 dark:hover:bg-red-950/20 dark:hover:border-red-800/30 transition-all duration-200 text-left">
-                  <span className="block font-semibold text-zinc-800 dark:text-zinc-200 group-hover:text-[#BB2020] dark:group-hover:text-[#FF4444] transition-colors">{item.name}</span>
-                  <span className="block text-zinc-400 truncate mt-0.5">{item.role}</span>
+                  className="group px-3 py-3 text-xs font-medium rounded-xl border border-[var(--border)] bg-[var(--bg-card)] hover:border-[var(--primary)]/30 hover:bg-[var(--primary)]/[0.03] transition-all duration-200 text-left">
+                  <span className="block font-semibold text-[var(--text)] group-hover:text-[var(--primary)] transition-colors">{item.name}</span>
+                  <span className="block text-[var(--text-light)] truncate mt-0.5">{item.role}</span>
                 </button>
               ))}
             </div>
@@ -131,7 +129,7 @@ export default function AuthPage() {
         </CardContent>
       </Card>
 
-      <p className="relative mt-8 text-xs text-zinc-400 text-center max-w-xs">
+      <p className="mt-8 text-xs text-[var(--text-light)] text-center max-w-xs">
         RoadSafe360 &mdash; Intelligent Driver Demerit &amp; Road Safety Management System
       </p>
     </div>

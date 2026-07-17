@@ -111,17 +111,17 @@ export default function MapPicker({ value, onChange }: MapPickerProps) {
       <div className="flex items-center gap-2">
         <input
           type="text" value={value} readOnly
-          className="flex-1 rounded-md border border-zinc-200 bg-white px-3 py-1.5 text-sm dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100"
+          className="flex-1 rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-2.5 text-sm text-[var(--text)] shadow-sm"
           placeholder="Click map or use to set location"
         />
         <button type="button" onClick={locateMe} disabled={locating}
-          className="inline-flex items-center justify-center rounded-md border border-zinc-200 bg-white p-2 text-sm hover:bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900 dark:hover:bg-zinc-800 disabled:opacity-50">
-          <FiCrosshair size={16} className={locating ? 'animate-spin' : ''} />
+          className="inline-flex items-center justify-center rounded-lg border border-[var(--border)] bg-[var(--bg-card)] p-2.5 text-sm hover:bg-[var(--bg-muted)] transition-colors disabled:opacity-50">
+          <FiCrosshair size={16} className={locating ? 'animate-spin' : 'text-[var(--text-muted)]'} />
         </button>
       </div>
-      {address && <p className="text-xs text-zinc-500">{address}</p>}
-      <div ref={mapRef} className="h-52 w-full rounded-lg border border-zinc-200 dark:border-zinc-700 overflow-hidden" style={{ zIndex: 1 }} />
-      {!mapReady && <div className="h-52 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-shimmer" />}
+      {address && <p className="text-xs text-[var(--text-muted)]">{address}</p>}
+      <div ref={mapRef} className="h-52 w-full rounded-xl border border-[var(--border)] overflow-hidden" style={{ zIndex: 1 }} />
+      {!mapReady && <div className="h-52 w-full rounded-xl bg-[var(--bg-muted)] animate-shimmer" />}
     </div>
   );
 }

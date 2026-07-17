@@ -78,14 +78,14 @@ export default function NewOffencePage() {
   };
 
   return (
-    <div className="space-y-6 py-6">
+    <div className="space-y-6 animate-fade-in">
       <div className="flex items-center gap-3">
-        <Link href="/offences" className="rounded-lg p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors">
-          <FiArrowLeft size={18} />
+        <Link href="/offences" className="rounded-lg p-2 text-[var(--text-muted)] hover:bg-[var(--bg-muted)] transition-colors">
+          <FiArrowLeft size={20} />
         </Link>
         <div>
-          <h1 className="text-xl sm:text-2xl font-bold">Issue Traffic Offence</h1>
-          <p className="text-xs sm:text-sm text-zinc-500">Record a new traffic violation</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-[var(--text)]">Issue Traffic Offence</h1>
+          <p className="text-sm text-[var(--text-muted)]">Record a new traffic violation</p>
         </div>
       </div>
 
@@ -96,44 +96,44 @@ export default function NewOffencePage() {
             <CardDescription>Fill in the details of the traffic offence</CardDescription>
           </CardHeader>
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Driver ID *</label>
+                  <label className="text-sm font-semibold text-[var(--text)]">Driver ID *</label>
                   <Input
                     value={driverId}
                     onChange={e => handleDriverChange(e.target.value)}
                     placeholder="Enter driver document ID"
-                    className={driverInfo ? 'border-green-500 focus-visible:ring-green-500' : driverNotFound ? 'border-red-500 focus-visible:ring-red-500' : ''}
+                    className={driverInfo ? 'border-emerald-500 focus-visible:ring-emerald-500' : driverNotFound ? 'border-red-500 focus-visible:ring-red-500' : ''}
                     required
                   />
                   {loadingDriver && (
-                    <div className="flex items-center gap-2 text-xs text-zinc-400">
-                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-zinc-300 border-t-zinc-600" />
+                    <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+                      <div className="h-3 w-3 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--primary)]" />
                       Verifying driver...
                     </div>
                   )}
                   {driverInfo && (
-                    <div className="flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 p-2.5 text-xs dark:border-green-800 dark:bg-green-950/30">
-                      <FiCheck className="mt-0.5 shrink-0 text-green-600" size={14} />
-                      <div className="text-green-800 dark:text-green-300">
-                        <span className="font-semibold">{driverInfo.fullName}</span>
-                        <span className="text-green-600 dark:text-green-400"> &middot; {driverInfo.nationalID}</span>
-                        <div className="mt-0.5 text-green-600 dark:text-green-400">
+                    <div className="flex items-start gap-2.5 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-xs dark:border-emerald-800 dark:bg-emerald-950/20">
+                      <FiCheck className="mt-0.5 shrink-0 text-emerald-600" size={15} />
+                      <div className="text-emerald-800 dark:text-emerald-300">
+                        <span className="font-bold">{driverInfo.fullName}</span>
+                        <span className="text-emerald-600 dark:text-emerald-400"> &middot; {driverInfo.nationalID}</span>
+                        <div className="mt-0.5 text-emerald-600 dark:text-emerald-400">
                           {driverInfo.pointsBalance}/20 pts &middot; {driverInfo.status}
                         </div>
                       </div>
                     </div>
                   )}
                   {driverNotFound && (
-                    <div className="flex items-center gap-1.5 text-xs text-red-600 dark:text-red-400">
+                    <div className="flex items-center gap-1.5 text-xs text-red-500">
                       <FiAlertTriangle size={12} />
                       Driver not found. Check the ID and try again.
                     </div>
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-sm font-medium">Offence Category *</label>
+                  <label className="text-sm font-semibold text-[var(--text)]">Offence Category *</label>
                   <Select value={categoryId} onChange={e => setCategoryId(e.target.value)} required>
                     <option value="">Select offence...</option>
                     {categories.map((c: any) => (
@@ -144,35 +144,35 @@ export default function NewOffencePage() {
               </div>
 
               {selectedCat && (
-                <div className="flex flex-col gap-1 rounded-lg border border-zinc-200 bg-zinc-50 p-3 text-sm dark:border-zinc-700 dark:bg-zinc-800/50">
+                <div className="flex flex-col gap-1.5 rounded-xl border border-[var(--border)] bg-[var(--bg)] p-4 text-sm">
                   <div className="flex items-start justify-between gap-2">
-                    <span className="font-semibold">{selectedCat.name}</span>
+                    <span className="font-bold text-[var(--text)]">{selectedCat.name}</span>
                     <div className="flex shrink-0 gap-2 text-xs">
-                      <span className="rounded bg-red-100 px-2 py-0.5 font-medium text-red-700 dark:bg-red-900/40 dark:text-red-400">
+                      <span className="rounded-lg bg-rose-50 px-2.5 py-1 font-semibold text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
                         {selectedCat.demeritPoints} pts
                       </span>
-                      <span className="rounded bg-emerald-100 px-2 py-0.5 font-medium text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-400">
+                      <span className="rounded-lg bg-emerald-50 px-2.5 py-1 font-semibold text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400">
                         KES {(selectedCat.fineAmount ?? 0).toLocaleString()}
                       </span>
                     </div>
                   </div>
                   {selectedCat.description && (
-                    <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-1">{selectedCat.description}</p>
+                    <p className="text-xs text-[var(--text-muted)]">{selectedCat.description}</p>
                   )}
                 </div>
               )}
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Location (click map or use crosshair)</label>
-                <Suspense fallback={<div className="h-52 w-full rounded-lg bg-zinc-100 dark:bg-zinc-800 animate-shimmer" />}>
+                <label className="text-sm font-semibold text-[var(--text)]">Location</label>
+                <Suspense fallback={<div className="h-52 w-full rounded-xl bg-[var(--bg-muted)] animate-shimmer" />}>
                   <MapPicker value={gpsLocation} onChange={setGpsLocation} />
                 </Suspense>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Officer Notes</label>
+                <label className="text-sm font-semibold text-[var(--text)]">Officer Notes</label>
                 <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3}
-                  className="flex w-full rounded-md border border-zinc-200 bg-white px-3 py-2 text-sm shadow-sm transition-colors placeholder:text-zinc-400 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-zinc-400 dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100 dark:placeholder:text-zinc-500"
+                  className="flex w-full rounded-lg border border-[var(--border)] bg-[var(--bg-card)] px-4 py-3 text-sm shadow-sm transition-all duration-200 placeholder:text-[var(--text-light)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/20 focus-visible:border-[var(--primary)]/50"
                   placeholder="Describe the offence..." />
               </div>
 
@@ -185,7 +185,7 @@ export default function NewOffencePage() {
                 </Button>
               </div>
 
-              <Button type="submit" variant="kenyan" className="w-full gap-2" disabled={submitting || !driverInfo}>
+              <Button type="submit" variant="default" className="w-full gap-2 h-12 text-base" disabled={submitting || !driverInfo}>
                 <FiSend size={16} />
                 {submitting ? 'Issuing...' : driverInfo ? `Issue Offence to ${driverInfo.fullName.split(' ')[0]}` : 'Verify driver first'}
               </Button>
