@@ -182,6 +182,13 @@ No environment variables needed — the Firebase config is inlined.
 
 ---
 
+## Documentation
+
+For complete technical documentation, refer to:
+- `documentation/RoadSafe360_Technical_Documentation.docx` — Comprehensive handover guide with 21 sections covering architecture, API, components, database, business logic, security, and developer onboarding.
+
+---
+
 ## License
 
 MIT — Educational project for PBL.
